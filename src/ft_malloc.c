@@ -1,3 +1,6 @@
 #include "ft_malloc.h"
 
-void *malloc(size_t size);
+int test(void)
+{
+    return (0);
+}

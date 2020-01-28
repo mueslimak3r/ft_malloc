@@ -1,11 +1,12 @@
-NAME = ft_malloc
+NAME = libftmalloc.so
 CC := gcc
 
 all: $(NAME)
 
 MODULES := src includes
 LIBDIRS := libft
-LIBS := -Llibft -lft
+#LIBS := #-Llibft -lft
+LIBS :=
 CFLAGS += -Ilibft/includes -Iincludes -Wall -Werror -Wextra -g -fsanitize=address
 MODNAME := module.mk
 SRC :=
@@ -18,13 +19,15 @@ DEP :=	$(patsubst %.c,%.d,$(filter %.c,$(SRC)))
 -include $(DEP)
 
 $(NAME): $(OBJ)
-	make -C libft
-	@$(CC) $(CFLAGS) $(OBJ) $(LIBS) -o $@
+	@$(CC) $(CFLAGS) $(OBJ) $(LIBS) -shared -o $@
 
 %.d : %.c
 	@./depend.sh $*.o $(CFLAGS) $< > $@
-	@printf '\t%s' "$(CC) $(CFLAGS) -c -o $*.o $<" >> $@
+	@printf '\t%s' "$(CC) $(CFLAGS) -c -fpic -o $*.o $<" >> $@
 	@echo $@ >> all.log
+
+test: $(NAME)
+	@$(CC) $(CFLAGS) main.c -L. -lftmalloc -o test
 
 clean:
 	make clean -C libft
