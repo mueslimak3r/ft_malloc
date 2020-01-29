@@ -27,9 +27,8 @@ void		fragment_block(t_header *current, t_header **last, size_t size)
 	if (current->size > size + 1)
 	{
 		t_header *tmp_next = current->next;
-		t_header *new = current + size;
+		t_header *new = current + size + 1;
 		new->next = tmp_next;
-		printf("current size: %lu\n", current->size);
 		new->size = current->size - size - 1;
 		new->flags ^= 0x1;
 		current->size = size;
@@ -53,7 +52,10 @@ t_header    *find_free_block(t_header **last, size_t size)
 		current = current->next;
 	}
 	if (current)
+	{
+		printf("found block\n");
 		fragment_block(current, last, size / META_SIZE);
+	}
 	return current;
 }
 
@@ -80,7 +82,7 @@ t_header    *request_space(t_header **last, size_t size)
 	block->next = NULL;
 	block->flags = 0;
 	fragment_block(block, last, size / META_SIZE);
-	return block;
+	return (block);
 }
 
 void        *ft_malloc(size_t size)
@@ -98,7 +100,7 @@ void        *ft_malloc(size_t size)
 		printf("getting first block\n");
 		block = request_space(NULL, size);
 		if (!block)
-			return NULL;
+			return (NULL);
 	}
 	else
 	{
@@ -108,7 +110,7 @@ void        *ft_malloc(size_t size)
 		{
 			block = request_space(&last, size);
 			if (!block)
-				return NULL;
+				return (NULL);
 		}
 	}
 	if (block)
