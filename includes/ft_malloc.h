@@ -26,8 +26,6 @@ struct s_malloc_data
 
 #define META_SIZE sizeof(t_header)
 
-static t_malloc_data    g_data = { NULL, NULL };
-
 void ft_free(void *ptr);
 void *ft_malloc(size_t size);
 

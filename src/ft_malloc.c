@@ -1,5 +1,7 @@
 #include "ft_malloc.h"
 
+static t_malloc_data    g_data = {NULL, NULL};
+
 void		show_alloc_mem()
 {
 	t_header	*current = g_data.allocp;
@@ -67,7 +69,7 @@ void		free(void *ptr)
 
 t_header    *request_space(t_header **last, size_t size)
 {
-	size_t		to_alloc = g_data.freep ? size : getpagesize();
+	size_t		to_alloc = g_data.freep ? size : (size_t)getpagesize();
 	t_header	*block = mmap(NULL, to_alloc, (PROT_READ | PROT_WRITE), (MAP_PRIVATE | MAP_ANONYMOUS), -1, 0);
 	if ((void*)block == (void*) -1)
 	{
