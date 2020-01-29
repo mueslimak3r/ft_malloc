@@ -2,6 +2,7 @@
 #define FT_MALLOC_H
 
 #include "libft.h"
+#include <sys/mman.h>
 
 // mmap(2) munmap(2) getpagesize(3) getrlimit(2) libpthread
 
@@ -20,6 +21,8 @@ struct s_malloc_data
     t_header        base;
     t_header        *freep;
 };
+
+#define META_SIZE sizeof(t_header)
 
 static t_malloc_data    g_data = { (t_header){ NULL, 0, 0 }, NULL };
 
