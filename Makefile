@@ -27,10 +27,11 @@ $(NAME): $(OBJ)
 	@echo $@ >> all.log
 
 test: $(NAME)
-	@$(CC) $(CFLAGS) main.c -L. -lftmalloc -o test
+	#make -C libft
+	@$(CC) $(CFLAGS) main.c -L. -lftmalloc -Llibft -lft -o test
 
 clean:
-	make clean -C libft
+	#make clean -C libft
 	rm -f $(OBJ)
 	rm -f $(shell cat all.log)
 	@rm -f all.log
@@ -41,7 +42,7 @@ clean_nolib:
 	@rm -f all.log
 
 fclean: clean_nolib
-	make fclean -C libft
+	#make fclean -C libft
 	rm -f $(NAME)
 
 re: fclean all
