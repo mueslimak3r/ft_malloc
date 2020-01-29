@@ -4,8 +4,9 @@
 #include "libft.h"
 
 // mmap(2) munmap(2) getpagesize(3) getrlimit(2) libpthread
-/*
-typedef struct s_header t_header;
+
+typedef struct s_header         t_header;
+typedef struct s_malloc_data    t_malloc_data;
 
 struct s_header
 {
@@ -14,11 +15,19 @@ struct s_header
     unsigned long   flags;
 };
 
-void free(void *ptr);
-void *malloc(size_t size);
-void *realloc(void *ptr, size_t size);
+struct s_malloc_data
+{
+    t_header        base;
+    t_header        *freep;
+};
+
+static t_malloc_data    g_data = { (t_header){ NULL, 0, 0 }, NULL };
+
+void ft_free(void *ptr);
+void *ft_malloc(size_t size);
+void *ft_realloc(void *ptr, size_t size);
 void show_alloc_mem();
-*/
+
 
 int test(void);
 
