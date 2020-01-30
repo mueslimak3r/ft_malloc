@@ -40,5 +40,21 @@ int main(void)
 	show_alloc_mem();
 	printf("\nfree memory:\n");
 	show_free_mem();
+
+
+	printf("\nfreeing s2...\n");
+	ft_free(s2);
+	printf("\nalloc'd memory:\n");
+	show_alloc_mem();
+	printf("\nfree memory:\n");
+	show_free_mem();
+
+	printf("\nfreeing s1...\n");
+	ft_free(s);
+	printf("\nalloc'd memory:\n");
+	show_alloc_mem();
+	printf("\nfree memory:\n");
+	show_free_mem();
+
     return (0);
 }

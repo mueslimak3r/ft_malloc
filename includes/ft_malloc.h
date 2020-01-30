@@ -13,7 +13,6 @@ struct s_header
 {
     t_header        *next;
 	t_header		*prev;
-	//t_header		*block_start;
     unsigned long   size;
     unsigned long   flags;
 };
