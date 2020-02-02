@@ -4,7 +4,11 @@
 #include "libft.h"
 #include <sys/mman.h>
 #include <unistd.h>
+#include <stdbool.h>
 // mmap(2) munmap(2) getpagesize(3) getrlimit(2) libpthread
+#define MIN_ALLOC 100
+#define TINY 128
+#define SMALL 2048
 
 typedef struct s_header         t_header;
 typedef struct s_malloc_data    t_malloc_data;
@@ -12,14 +16,18 @@ typedef struct s_malloc_data    t_malloc_data;
 struct s_header
 {
     t_header        *next;
+	t_header		*prev;
 	t_header		*block_start;
-    unsigned long   size;
-    unsigned long   flags;
+    unsigned int	size;
+	unsigned int	flags;
 };
 
 struct s_malloc_data
 {
-    t_header        *freep;
+	t_heaader		*tiny;
+	t_heaader		*small;
+	t_heaader		*large;
+	t_header		*freep;
 };
 
 #define META_SIZE sizeof(t_header)
