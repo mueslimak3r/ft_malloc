@@ -12,14 +12,13 @@ typedef struct s_malloc_data    t_malloc_data;
 struct s_header
 {
     t_header        *next;
-	t_header		*prev;
+	t_header		*block_start;
     unsigned long   size;
     unsigned long   flags;
 };
 
 struct s_malloc_data
 {
-    t_header        *allocp;
     t_header        *freep;
 };
 
