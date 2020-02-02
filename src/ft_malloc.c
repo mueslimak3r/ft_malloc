@@ -30,6 +30,7 @@ void		show_alloc_mem()
 
 void		show_free_mem()
 {
+	
 	t_header	*current = g_data.tiny;
 	while (current)
 	{
