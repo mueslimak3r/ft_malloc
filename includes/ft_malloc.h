@@ -7,8 +7,8 @@
 #include <stdbool.h>
 // mmap(2) munmap(2) getpagesize(3) getrlimit(2) libpthread
 #define MIN_ALLOC 100
-#define TINY 128
-#define SMALL 2048
+#define TINY 224
+#define SMALL 2016
 
 typedef struct s_header         t_header;
 typedef struct s_malloc_data    t_malloc_data;

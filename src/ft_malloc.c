@@ -74,10 +74,10 @@ void		ft_free(void *ptr)
 	block_ptr->flags ^= 0x1;
 }
 
-t_header    *request_space(t_header **last, size_t size)
+t_header    *request_space(size_t size)
 {
 	size_t		page_size = (size_t)getpagesize();
-	size_t		to_alloc = size > page_size ? page_size * ((size / page_size) + 1);
+	size_t		to_alloc = size > page_size ? (page_size * ((size / page_size) + 1)) : page_size;
 	printf("to alloc %zu\n", to_alloc);
 	t_header	*block = mmap(NULL, to_alloc, (PROT_READ | PROT_WRITE), (MAP_PRIVATE | MAP_ANONYMOUS), -1, 0);
 	if ((void*)block == MAP_FAILED)
@@ -98,18 +98,22 @@ void		init_blocks(t_header *block, size_t block_size, size_t block_amt)
 		if (last)
 			last->next = block;
 		block->flags = 0;
-		block->size = block_size;
+		block->size = block_size / META_SIZE;
 		last = block;
-		block += block_size;
+		block += (block_size / META_SIZE);
 		block_amt--;
 	}
 }
 
 void		ft_malloc_init(void)
 {
-	request_space(&g_data.tiny, MIN_ALLOC * (TINY + META_SIZE));
+	g_data.tiny = request_space(MIN_ALLOC * (TINY + META_SIZE));
+	if (!g_data.tiny)
+		return ;
 	init_blocks(g_data.tiny, TINY, MIN_ALLOC);
-	request_space(&g_data.small, MIN_ALLOC * (SMALL + META_SIZE));
+	g_data.small = request_space(MIN_ALLOC * (SMALL + META_SIZE));
+	if (!g_data.small)
+		return ;
 	init_blocks(g_data.small, SMALL, MIN_ALLOC);
 	g_initialized = true;
 }
@@ -138,18 +142,18 @@ void        *ft_malloc(size_t size)
 	else if (size > TINY && size <= SMALL)
 	{
 		block_size = SMALL;
-		alloc_single_zone = true;
 		last = g_data.small;
 	}
 	else
 	{
 		last = g_data.large;
+		alloc_single_zone = true;
 		block_size = size;
 	}
 	block = find_free_block(&last, size);
 	if (!block)
 	{
-		block = request_space(&last, alloc_single_zone ? size + META_SIZE : MIN_ALLOC * (block_size + META_SIZE));
+		block = request_space(alloc_single_zone ? size + META_SIZE : MIN_ALLOC * (block_size + META_SIZE));
 		if (!block)
 			return (NULL);
 		init_blocks(block, block_size, alloc_single_zone ? 1 : MIN_ALLOC);
