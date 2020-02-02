@@ -17,17 +17,15 @@ struct s_header
 {
     t_header        *next;
 	t_header		*prev;
-	t_header		*block_start;
-    unsigned int	size;
-	unsigned int	flags;
+    unsigned long	size;
+	unsigned long	flags;
 };
 
 struct s_malloc_data
 {
-	t_heaader		*tiny;
-	t_heaader		*small;
-	t_heaader		*large;
-	t_header		*freep;
+	t_header		*tiny;
+	t_header		*small;
+	t_header		*large;
 };
 
 #define META_SIZE sizeof(t_header)
