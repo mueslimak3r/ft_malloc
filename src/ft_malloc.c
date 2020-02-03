@@ -6,32 +6,35 @@ static bool				g_initialized = false;
 void		show_alloc_mem()
 {
 	t_header	*current = g_data.tiny;
+	printf("SMALL:\n");
 	while (current)
 	{
 		if (current->flags & 0x1)
 		{
 			unsigned int type = current->flags >> 1;
-			printf("%p : %lu bytes, type: %d\n", current, current->size * META_SIZE + META_SIZE, type);
+			printf("%p : %lu bytes, type: %u\n", current, current->size * META_SIZE + META_SIZE, type);
 		}
 		current = current->next;
 	}
 	current = g_data.small;
+	printf("SMALL:\n");
 	while (current)
 	{
 		if (current->flags & 0x1)
 		{
 			unsigned int type = current->flags >> 1;
-			printf("%p : %lu bytes, type: %d\n", current, current->size * META_SIZE + META_SIZE, type);
+			printf("%p : %lu bytes, type: %u\n", current, current->size * META_SIZE + META_SIZE, type);
 		}
 		current = current->next;
 	}
 	current = g_data.large;
+	printf("LARGE:\n");
 	while (current)
 	{
 		if (current->flags & 0x1)
 		{
 			unsigned int type = current->flags >> 1;
-			printf("%p : %lu bytes, type: %d\n", current, current->size * META_SIZE + META_SIZE, type);
+			printf("%p : %lu bytes, type: %u\n", current, current->size * META_SIZE + META_SIZE, type);
 		}
 		current = current->next;
 	}
@@ -40,32 +43,35 @@ void		show_alloc_mem()
 void		show_free_mem()
 {
 	t_header	*current = g_data.tiny;
+	printf("TINY:\n");
 	while (current)
 	{
 		if (!(current->flags & 0x1))
 		{
 			unsigned int type = current->flags >> 1;
-			printf("%p : %lu bytes, type: %d\n", current, current->size * META_SIZE + META_SIZE, type);
+			printf("%p : %lu bytes, type: %u\n", current, current->size * META_SIZE + META_SIZE, type);
 		}
 		current = current->next;
 	}
 	current = g_data.small;
+	printf("SMALL:\n");
 	while (current)
 	{
 		if (!(current->flags & 0x1))
 		{
 			unsigned int type = current->flags >> 1;
-			printf("%p : %lu bytes, type: %d\n", current, current->size * META_SIZE + META_SIZE, type);
+			printf("%p : %lu bytes, type: %u\n", current, current->size * META_SIZE + META_SIZE, type);
 		}
 		current = current->next;
 	}
 	current = g_data.large;
+	printf("LARGE:\n");
 	while (current)
 	{
 		if (!(current->flags & 0x1))
 		{
 			unsigned int type = current->flags >> 1;
-			printf("%p : %lu bytes, type: %d\n", current, current->size * META_SIZE + META_SIZE, type);
+			printf("%p : %lu bytes, type: %u\n", current, current->size * META_SIZE + META_SIZE, type);
 		}
 		current = current->next;
 	}
