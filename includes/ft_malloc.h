@@ -26,6 +26,9 @@ struct s_malloc_data
 	t_header		*tiny;
 	t_header		*small;
 	t_header		*large;
+	unsigned long	tiny_amt;
+	unsigned long	small_amt;
+	size_t			page_size;
 };
 
 #define META_SIZE sizeof(t_header)
