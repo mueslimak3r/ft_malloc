@@ -1,81 +1,4 @@
-#include "ft_malloc.h"
-
-static t_malloc_data    g_data = { NULL, NULL, NULL, 0, 0, 0 };
-static bool				g_initialized = false;
-
-void		show_alloc_mem()
-{
-	t_header	*current = g_data.tiny;
-	printf("SMALL:\n");
-	while (current)
-	{
-		if (current->flags & 0x1)
-		{
-			unsigned int type = current->flags >> 1;
-			printf("%p : %lu bytes, type: %u\n", current, current->size * META_SIZE + META_SIZE, type);
-		}
-		current = current->next;
-	}
-	current = g_data.small;
-	printf("SMALL:\n");
-	while (current)
-	{
-		if (current->flags & 0x1)
-		{
-			unsigned int type = current->flags >> 1;
-			printf("%p : %lu bytes, type: %u\n", current, current->size * META_SIZE + META_SIZE, type);
-		}
-		current = current->next;
-	}
-	current = g_data.large;
-	printf("LARGE:\n");
-	while (current)
-	{
-		if (current->flags & 0x1)
-		{
-			unsigned int type = current->flags >> 1;
-			printf("%p : %lu bytes, type: %u\n", current, current->size * META_SIZE + META_SIZE, type);
-		}
-		current = current->next;
-	}
-}
-
-void		show_free_mem()
-{
-	t_header	*current = g_data.tiny;
-	printf("TINY:\n");
-	while (current)
-	{
-		if (!(current->flags & 0x1))
-		{
-			unsigned int type = current->flags >> 1;
-			printf("%p : %lu bytes, type: %u\n", current, current->size * META_SIZE + META_SIZE, type);
-		}
-		current = current->next;
-	}
-	current = g_data.small;
-	printf("SMALL:\n");
-	while (current)
-	{
-		if (!(current->flags & 0x1))
-		{
-			unsigned int type = current->flags >> 1;
-			printf("%p : %lu bytes, type: %u\n", current, current->size * META_SIZE + META_SIZE, type);
-		}
-		current = current->next;
-	}
-	current = g_data.large;
-	printf("LARGE:\n");
-	while (current)
-	{
-		if (!(current->flags & 0x1))
-		{
-			unsigned int type = current->flags >> 1;
-			printf("%p : %lu bytes, type: %u\n", current, current->size * META_SIZE + META_SIZE, type);
-		}
-		current = current->next;
-	}
-}
+#include "ft_malloc_deps.h"
 
 t_header    *request_space(size_t size)
 {
@@ -86,7 +9,7 @@ t_header    *request_space(size_t size)
 		return NULL;
 	block->next = NULL;
 	block->prev = NULL;
-	block->size = to_alloc / META_SIZE - 1;
+	block->size = (to_alloc / g_data.meta_size) - 1;
 	block->flags = 0x8;
 	printf("reserved %zu bytes at %p\n", to_alloc, block);
 	return (block);
@@ -95,10 +18,13 @@ t_header    *request_space(size_t size)
 void		init_blocks(t_header *block, size_t block_size, size_t block_amt, unsigned long flags)
 {
 	t_header		*last;
+	unsigned long	size_in_blocks;
 
 	last = NULL;
 	if (!block)
 		return ;
+	size_in_blocks = block_size / g_data.meta_size;
+	printf("size in blks: %lu blk size %zu meta size: %zu\n", size_in_blocks, block_size, g_data.meta_size);
 	while (block_amt > 0)
 	{
 		block->next = NULL;
@@ -106,22 +32,23 @@ void		init_blocks(t_header *block, size_t block_size, size_t block_amt, unsigned
 		if (last)
 			last->next = block;
 		block->flags = flags;
-		block->size = block_size / META_SIZE;
+		block->size = size_in_blocks;
 		last = block;
-		block += (block_size / META_SIZE);
+		block += size_in_blocks;
 		block_amt--;
 	}
 }
 
 void		ft_malloc_init(void)
 {
+	g_data.meta_size = sizeof(t_header);
 	g_data.page_size = (size_t)getpagesize();
-	g_data.tiny = request_space(MIN_ALLOC * (TINY + META_SIZE));
+	g_data.tiny = request_space(MIN_ALLOC * (TINY + g_data.meta_size));
 	if (!g_data.tiny)
 		return ;
 	init_blocks(g_data.tiny, TINY, MIN_ALLOC, 0x2);
 	g_data.tiny_amt = MIN_ALLOC;
-	g_data.small = request_space(MIN_ALLOC * (SMALL + META_SIZE));
+	g_data.small = request_space(MIN_ALLOC * (SMALL + g_data.meta_size));
 	if (!g_data.small)
 		return ;
 	init_blocks(g_data.small, SMALL, MIN_ALLOC, 0x4);
@@ -132,7 +59,7 @@ void		ft_malloc_init(void)
 t_header    *find_free_block(t_header **last, size_t size)
 {
 	t_header *current = last ? *last : NULL;
-	while (current && !(!(current->flags & 0x1) && current->size >= size / META_SIZE))
+	while (current && !(!(current->flags & 0x1) && current->size >= size / g_data.meta_size))
 	{
 		*last = current;
 		current = current->next;
@@ -142,68 +69,6 @@ t_header    *find_free_block(t_header **last, size_t size)
 	return current;
 }
 
-void		unmap_mem(t_header *page_start, size_t amt)
-{
-	if (!page_start)
-		return ;
-	if (page_start->flags & 0x2)
-		g_data.tiny_amt -= amt / (TINY + META_SIZE);
-	else if (page_start->flags & 0x4)
-		g_data.small_amt -= amt / (SMALL + META_SIZE);
-	munmap(page_start, amt);
-}
-
-void		check_unmap(t_header *page_start)
-{
-	t_header	*tmp = page_start;
-	t_header	*last = NULL;
-	if (page_start->flags & 0x8)
-	{
-		if (page_start->prev)
-			page_start->prev->next = page_start->next;
-		if (page_start->next)
-			page_start->next->prev = page_start->prev;
-		if (g_data.large == page_start)
-			g_data.large = g_data.large->next;
-		unmap_mem(page_start, page_start->size * META_SIZE + META_SIZE);
-		return ;
-	}
-	if (page_start->flags & 0x2 && g_data.tiny_amt - (g_data.page_size / (TINY + META_SIZE)) < MIN_ALLOC)
-		return ;
-	if (page_start->flags & 0x4 && g_data.small_amt - (g_data.page_size / (SMALL + META_SIZE)) < MIN_ALLOC)
-		return ;
-	while (tmp && (uintptr_t)tmp < (uintptr_t)page_start + g_data.page_size)
-	{
-		if (tmp->flags & 0x1)
-			return ;
-		last = tmp;
-		tmp = tmp->next;
-	}
-	if (page_start->prev)
-		page_start->prev->next = last->next;
-	if (last && last->next)
-		last->next->prev = page_start->prev;
-	if (page_start && page_start == g_data.tiny)
-		g_data.tiny = last ? last->next : NULL;
-	else if (page_start && page_start == g_data.small)
-		g_data.small = last ? last->next : NULL;
-	unmap_mem(page_start, g_data.page_size);
-}
-
-void		ft_free(void *ptr)
-{
-	if (!ptr)
-		return ;
-	if (!g_initialized)
-	{
-		ft_malloc_init();
-		return ;
-	}
-	t_header    *block_ptr = (t_header*)ptr - 1;
-	block_ptr->flags ^= 0x1;
-	check_unmap((t_header*)((uintptr_t)block_ptr - ((uintptr_t)block_ptr % g_data.page_size)));
-}
-
 void        *ft_malloc(size_t size)
 {
 	t_header		*block;
@@ -211,14 +76,14 @@ void        *ft_malloc(size_t size)
 	size_t			block_size;
 	unsigned int	flags;
 
+	if (!g_initialized)
+		ft_malloc_init();
 	if (size == 0)
 		return NULL;
 	block_size = 0;
 	printf("input size: %zu\n", size);
-	size = META_SIZE * (size / META_SIZE) + (size % META_SIZE ? META_SIZE : 0);
-	printf("meta size: %lu, new size: %zu\n", META_SIZE, size);
-	if (!g_initialized)
-		ft_malloc_init();
+	size = g_data.meta_size * (size / g_data.meta_size) + (size % g_data.meta_size ? g_data.meta_size : 0);
+	printf("meta size: %lu, new size: %zu\n", g_data.meta_size, size);
 	flags = 0;
 	last = NULL;
 	if (size <= TINY)
@@ -242,7 +107,7 @@ void        *ft_malloc(size_t size)
 	block = find_free_block(&last, size);
 	if (!block)
 	{
-		block = request_space(flags == 0x8 ? size + META_SIZE : MIN_ALLOC * (block_size + META_SIZE));
+		block = request_space(flags == 0x8 ? size + g_data.meta_size : MIN_ALLOC * (block_size + g_data.meta_size));
 		if (!block)
 			return (NULL);
 		if (!(flags & 0x8))

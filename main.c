@@ -1,8 +1,16 @@
 #include "ft_malloc.h"
+#include "libft.h"
 #include <stdio.h>
 
 int main(void)
 {
+	ft_malloc(0);
+
+	printf("\nalloc'd memory:\n");
+	show_alloc_mem();
+	printf("\nfree memory:\n");
+	show_free_mem();
+
 	char *ref = "hello world";
 	int len = ft_strlen(ref);
 	char *s = ft_malloc(len + 1);
