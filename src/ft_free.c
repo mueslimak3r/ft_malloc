@@ -32,7 +32,7 @@ void		check_unmap(t_header *page_start)
 		return ;
 
 
-	while (tmp && (uintptr_t)tmp < (uintptr_t)page_start + g_data.page_size)
+	while (tmp && (unsigned long)tmp < (unsigned long)page_start + g_data.page_size)
 	{
 		if (tmp->flags & 0x1)
 			return ;
@@ -56,7 +56,7 @@ void		check_unmap(t_header *page_start)
 	munmap(page_start, g_data.page_size);
 }
 
-void		ft_free(void *ptr)
+void		free(void *ptr)
 {
 	if (!ptr)
 		return ;
@@ -67,5 +67,5 @@ void		ft_free(void *ptr)
 	}
 	t_header    *block_ptr = (t_header*)ptr - 1;
 	block_ptr->flags ^= 0x1;
-	check_unmap((t_header*)((uintptr_t)block_ptr - ((uintptr_t)block_ptr % g_data.page_size)));
+	check_unmap((t_header*)((unsigned long)block_ptr - ((unsigned long)block_ptr % g_data.page_size)));
 }

@@ -69,7 +69,7 @@ t_header    *find_free_block(t_header **last, size_t size)
 	return current;
 }
 
-void        *ft_malloc(size_t size)
+void        *malloc(size_t size)
 {
 	t_header		*block;
 	t_header		*last;

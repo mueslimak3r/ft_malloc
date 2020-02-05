@@ -22,6 +22,7 @@ $(NAME): $(OBJ)
 	$(CC) $(CFLAGS) $(OBJ) $(LIBS) -shared -o $@
 
 %.d : %.c
+	make -C libft
 	@./depend.sh $*.o $(CFLAGS) $< > $@
 	@printf '\t%s' "$(CC) $(CFLAGS) -c -fpic -o $*.o $<" >> $@
 	@echo $@ >> all.log
@@ -30,7 +31,7 @@ test: all
 	$(CC) $(CFLAGS) main.c -L. -lftmalloc -Llibft -lft -o test
 
 clean:
-	#make clean -C libft
+	make clean -C libft
 	rm -f $(OBJ)
 	rm -f $(shell cat all.log)
 	@rm -f all.log
@@ -41,7 +42,7 @@ clean_nolib:
 	@rm -f all.log
 
 fclean: clean_nolib
-	#make fclean -C libft
+	make fclean -C libft
 	rm -f $(NAME)
 
 re: fclean all
