@@ -92,7 +92,7 @@ void		free(void *ptr)
 		}
 	}
 	block_ptr->flags ^= 0x1;
-	/*
+
 	if (block_ptr->flags & 0x8)
 		check_unmap(block_ptr, 0x8);
 	else
@@ -102,6 +102,6 @@ void		free(void *ptr)
 			offset /= g_data.meta_size;
 		check_unmap(block_ptr - offset, block_ptr->flags);
 	}
-	*/
+
 	fprintf(g_data.debug_out, "FINISHED FREEING %p\n", block_ptr);
 }

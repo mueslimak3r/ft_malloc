@@ -36,7 +36,7 @@ void		init_blocks(t_header *block, size_t block_size, size_t block_amt, unsigned
 		block->flags = flags;
 		block->size = size_in_blocks;
 		last = block;
-		block += size_in_blocks;
+		block += size_in_blocks + 1;
 		block_amt--;
 	}
 }
@@ -52,13 +52,14 @@ void		ft_malloc_init(void)
 	g_data.tiny = request_space(MIN_ALLOC * (TINY + g_data.meta_size));
 	if (!g_data.tiny)
 		return ;
-	init_blocks(g_data.tiny, TINY, MIN_ALLOC, 0x2);
-	g_data.tiny_amt = MIN_ALLOC;
+	g_data.tiny_amt = (g_data.tiny->size + 1) / ((TINY / g_data.meta_size) + 1);
+	init_blocks(g_data.tiny, TINY, g_data.tiny_amt, 0x2);
+
 	g_data.small = request_space(MIN_ALLOC * (SMALL + g_data.meta_size));
 	if (!g_data.small)
 		return ;
-	init_blocks(g_data.small, SMALL, MIN_ALLOC, 0x4);
-	g_data.tiny_amt = MIN_ALLOC;
+	g_data.small_amt = (g_data.small->size + 1) / ((SMALL / g_data.meta_size) + 1);
+	init_blocks(g_data.small, SMALL, g_data.small_amt, 0x4);
 	g_initialized = true;
 }
 
@@ -119,11 +120,14 @@ void        *malloc(size_t size)
 		if (!block)
 			return (NULL);
 		if (!(flags & 0x8))
-			init_blocks(block, block_size, MIN_ALLOC, flags);
-		if (flags != 0x8 && block_size == TINY)
-			g_data.tiny_amt += MIN_ALLOC;
-		else if (flags != 0x8 && block_size == SMALL)
-			g_data.small_amt += MIN_ALLOC;
+		{
+			unsigned long amt_allocd = (block->size + 1) / ((block_size / g_data.meta_size) + 1);
+			init_blocks(block, block_size, amt_allocd, flags);
+			if (block_size == TINY)
+				g_data.tiny_amt += amt_allocd;
+			else if (flags != 0x8 && block_size == SMALL)
+				g_data.small_amt += amt_allocd;
+		}
 		block->prev = NULL;
 		if (last)
 		{
