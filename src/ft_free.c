@@ -32,6 +32,8 @@ void		check_unmap(t_header *page_start, unsigned long flags)
 	else
 		return ;
 
+	if (DEBUG)
+		fprintf(g_data.debug_out, "tiny amt %lu small amt %lu\n", g_data.tiny_amt, g_data.small_amt);
 	if (page_start->flags & 0x2 && g_data.tiny_amt - allocs_per_page < MIN_ALLOC)
 		return ;
 	else if (page_start->flags & 0x4 && g_data.small_amt - allocs_per_page < MIN_ALLOC)

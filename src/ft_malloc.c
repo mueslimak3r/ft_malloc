@@ -90,14 +90,11 @@ void        *malloc(size_t size)
 		ft_malloc_init();
 	if (size == 0)
 		return NULL;
-	block_size = 0;
 	if (DEBUG)
 		fprintf(g_data.debug_out, "input size: %zu\n", size);
 	size = g_data.meta_size * (size / g_data.meta_size) + (size % g_data.meta_size ? g_data.meta_size : 0);
 	if (DEBUG)
 		fprintf(g_data.debug_out, "meta size: %lu, new size: %zu\n", g_data.meta_size, size);
-	flags = 0;
-	last = NULL;
 	if (size <= TINY)
 	{
 		flags = 0x2;
