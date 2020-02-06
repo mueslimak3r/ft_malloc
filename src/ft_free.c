@@ -1,5 +1,5 @@
 #include "ft_malloc_deps.h"
-
+#include "ft_malloc.h"
 void		check_unmap(t_header *page_start, unsigned long flags)
 {
 	t_header	*tmp = page_start;
@@ -59,7 +59,13 @@ void		check_unmap(t_header *page_start, unsigned long flags)
 		g_data.small = last ? last->next : NULL;
 	}
 	if (DEBUG)
+	{
 		fprintf(g_data.debug_out, "UNMAPPING: %p size: %lu\n", page_start, g_data.page_size);
+		fprintf(g_data.debug_out, "\nalloc'd memory:\n");
+		show_alloc_mem();
+		fprintf(g_data.debug_out, "\nfree memory:\n");
+		show_free_mem();
+	}
 	munmap(page_start, g_data.page_size);
 }
 
