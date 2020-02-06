@@ -3,7 +3,7 @@
 t_header    *request_space(size_t size)
 {
 	size_t		to_alloc = size > g_data.page_size ? (g_data.page_size * ((size / g_data.page_size) + 1)) : g_data.page_size;
-	printf("to alloc %zu\n", to_alloc);
+	fprintf(g_data.debug_out, "to alloc %zu\n", to_alloc);
 	t_header	*block = mmap(NULL, to_alloc, (PROT_READ | PROT_WRITE), (MAP_PRIVATE | MAP_ANONYMOUS), -1, 0);
 	if ((void*)block == MAP_FAILED)
 		return NULL;
@@ -11,7 +11,8 @@ t_header    *request_space(size_t size)
 	block->prev = NULL;
 	block->size = (to_alloc / g_data.meta_size) - 1;
 	block->flags = 0x8;
-	printf("reserved %zu bytes at %p\n", to_alloc, block);
+	if (DEBUG)
+		fprintf(g_data.debug_out, "reserved %zu bytes at %p\n", to_alloc, block);
 	return (block);
 }
 
@@ -24,7 +25,8 @@ void		init_blocks(t_header *block, size_t block_size, size_t block_amt, unsigned
 	if (!block)
 		return ;
 	size_in_blocks = block_size / g_data.meta_size;
-	printf("size in blks: %lu blk size %zu meta size: %zu\n", size_in_blocks, block_size, g_data.meta_size);
+	if (DEBUG)
+		fprintf(g_data.debug_out, "size in blks: %lu blk size %zu meta size: %zu\n", size_in_blocks, block_size, g_data.meta_size);
 	while (block_amt > 0)
 	{
 		block->next = NULL;
@@ -41,6 +43,10 @@ void		init_blocks(t_header *block, size_t block_size, size_t block_amt, unsigned
 
 void		ft_malloc_init(void)
 {
+	if (DEBUG)
+		g_data.debug_out = fopen("/tmp/ft_malloc_debug", "ab+");
+	else
+		g_data.debug_out = NULL;
 	g_data.meta_size = sizeof(t_header);
 	g_data.page_size = (size_t)getpagesize();
 	g_data.tiny = request_space(MIN_ALLOC * (TINY + g_data.meta_size));
@@ -65,7 +71,7 @@ t_header    *find_free_block(t_header **last, size_t size)
 		current = current->next;
 	}
 	if (current)
-		printf("found block\n");
+		fprintf(g_data.debug_out, "found block\n");
 	return current;
 }
 
@@ -81,9 +87,11 @@ void        *malloc(size_t size)
 	if (size == 0)
 		return NULL;
 	block_size = 0;
-	printf("input size: %zu\n", size);
+	if (DEBUG)
+		fprintf(g_data.debug_out, "input size: %zu\n", size);
 	size = g_data.meta_size * (size / g_data.meta_size) + (size % g_data.meta_size ? g_data.meta_size : 0);
-	printf("meta size: %lu, new size: %zu\n", g_data.meta_size, size);
+	if (DEBUG)
+		fprintf(g_data.debug_out, "meta size: %lu, new size: %zu\n", g_data.meta_size, size);
 	flags = 0;
 	last = NULL;
 	if (size <= TINY)

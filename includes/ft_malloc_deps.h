@@ -12,6 +12,7 @@
 #define MIN_ALLOC 100
 #define TINY 224
 #define SMALL 2016
+#define DEBUG 1
 
 typedef struct s_header         t_header;
 typedef struct s_malloc_data    t_malloc_data;
@@ -29,6 +30,7 @@ struct s_malloc_data
 	t_header		*tiny;
 	t_header		*small;
 	t_header		*large;
+	FILE			*debug_out;
 	unsigned long	tiny_amt;
 	unsigned long	small_amt;
 	size_t			page_size;

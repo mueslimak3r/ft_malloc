@@ -7,7 +7,7 @@ MODULES := src includes
 LIBDIRS := libft
 #LIBS := #-Llibft -lft
 LIBS :=
-CFLAGS += -Ilibft/includes -Iincludes -Wall -Werror -Wextra -fsanitize=address -g
+CFLAGS += -Ilibft/includes -Iincludes -Wall -Werror -Wextra -g#-fsanitize=address 
 MODNAME := module.mk
 SRC :=
 
@@ -19,10 +19,10 @@ DEP :=	$(patsubst %.c,%.d,$(filter %.c,$(SRC)))
 -include $(DEP)
 
 $(NAME): $(OBJ)
+	make -C libft
 	$(CC) $(CFLAGS) $(OBJ) $(LIBS) -shared -o $@
 
 %.d : %.c
-	make -C libft
 	@./depend.sh $*.o $(CFLAGS) $< > $@
 	@printf '\t%s' "$(CC) $(CFLAGS) -c -fpic -o $*.o $<" >> $@
 	@echo $@ >> all.log
@@ -45,6 +45,6 @@ fclean: clean_nolib
 	make fclean -C libft
 	rm -f $(NAME)
 
-re: fclean all
+re: clean_nolib all
 
 .PHONY: all clean fclean re

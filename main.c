@@ -4,7 +4,10 @@
 
 int main(void)
 {
-	malloc(0);
+	if (malloc(0))
+	{
+		;
+	}
 
 	printf("\nalloc'd memory:\n");
 	show_alloc_mem();

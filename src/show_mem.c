@@ -2,6 +2,11 @@
 
 void		show_alloc_mem()
 {
+	if (!g_initialized)
+	{
+		printf("NOT INITIALIZED\n");
+		ft_malloc_init();
+	}
 	t_header	*current = g_data.tiny;
 	printf("SMALL:\n");
 	while (current)
@@ -39,6 +44,11 @@ void		show_alloc_mem()
 
 void		show_free_mem()
 {
+	if (!g_initialized)
+	{
+		printf("NOT INITIALIZED\n");
+		ft_malloc_init();
+	}
 	t_header	*current = g_data.tiny;
 	printf("TINY:\n");
 	while (current)
