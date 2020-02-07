@@ -19,11 +19,11 @@ DEP :=	$(patsubst %.c,%.d,$(filter %.c,$(SRC)))
 
 $(NAME): $(OBJ)
 	make -C libft
-	$(CC) $(CFLAGS) $(OBJ) $(LIBS) -shared -o $@
+	$(CC) $(CFLAGS) -shared -fPIC $(OBJ) $(LIBS) -o $@
 
 %.d : %.c
 	@./depend.sh $*.o $(CFLAGS) $< > $@
-	@printf '\t%s' "$(CC) $(CFLAGS) -c -fpic -o $*.o $<" >> $@
+	@printf '\t%s' "$(CC) $(CFLAGS) -fPIC -c -o $*.o $<" >> $@
 	@echo $@ >> all.log
 
 unit_tests: all

@@ -1,2 +1,7 @@
 #!/bin/bash
-export LD_LIBRARY_PATH=.:$LD_LIBRARY_PATH ; ./test
+
+#linux
+# export LD_LIBRARY_PATH=.
+
+#macos
+# export DYLD_LIBRARY_PATH=`pwd`

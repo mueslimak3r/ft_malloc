@@ -1,6 +1,7 @@
 #ifndef FT_MALLOC_H
 #define FT_MALLOC_H
 
+#include <stdio.h>
 #include <unistd.h>
 
 void		free(void *ptr);
