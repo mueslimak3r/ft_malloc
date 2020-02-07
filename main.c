@@ -4,12 +4,12 @@
 
 int main(void)
 {
-
+	printf("starting\n");
 	if (malloc(0))
 	{
 		;
 	}
-	printf("starting\n");
+
 	printf("\nalloc'd memory:\n");
 	show_alloc_mem();
 	printf("\nfree memory:\n");
