@@ -61,16 +61,25 @@ t_header    *request_space(size_t size, size_t units, unsigned long flags, unsig
 
 void		ft_malloc_init(void)
 {
+	pthread_mutex_init(&g_mutex_lock, NULL);
+	pthread_mutex_lock(&g_mutex_lock);
 	g_data.meta_size = sizeof(t_header);
 	g_data.page_size = (size_t)getpagesize();
 	g_data.tiny = request_space(MIN_ALLOC * (TINY + g_data.meta_size), TINY, 0x2, &g_data.tiny_amt);
 	if (!g_data.tiny)
+	{
+		pthread_mutex_unlock(&g_mutex_lock);
 		return ;
+	}
 	g_data.small = request_space(MIN_ALLOC * (SMALL + g_data.meta_size), SMALL, 0x4, &g_data.small_amt);
 	if (!g_data.small)
+	{
+		pthread_mutex_unlock(&g_mutex_lock);
 		return ;
+	}
 	g_data.large = NULL;
 	g_initialized = true;
+	pthread_mutex_unlock(&g_mutex_lock);
 }
 
 t_header    *find_free_block(t_header **last, size_t size)
@@ -129,8 +138,10 @@ void        *ft_malloc(size_t size)
 
 	if (!g_initialized)
 		ft_malloc_init();
+	//ft_putstr_fd("MALLOC CALLED\n", 1);
 	if (size == 0)
 		return NULL;
+	pthread_mutex_lock(&g_mutex_lock);
 	size = g_data.meta_size * (size / g_data.meta_size) + (size % g_data.meta_size ? g_data.meta_size : 0);
 	get_type(&flags, &block_size, &last, size);
 	block = find_free_block(&last, size);
@@ -142,11 +153,15 @@ void        *ft_malloc(size_t size)
 			block = request_space(MIN_ALLOC * (block_size + g_data.meta_size),
 			block_size, flags, (flags == 0x2 ? &g_data.tiny_amt : &g_data.small_amt));
 		if (!block)
+		{
+			pthread_mutex_unlock(&g_mutex_lock);
 			return (NULL);
+		}
 		join_new_block(block, last, flags);
 	}
 	if (block)
 		block->flags |= 0x1;
+	pthread_mutex_unlock(&g_mutex_lock);
 	return(block + 1);
 }
 
