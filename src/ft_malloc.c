@@ -9,8 +9,8 @@ void		init_blocks(t_header *block, size_t block_size, size_t block_amt, unsigned
 	if (!block)
 		return ;
 	size_in_blocks = block_size / g_data.meta_size;
-	if (DEBUG && g_initialized)
-		fprintf(g_data.debug_out, "size in blks: %lu blk size %zu meta size: %zu\n", size_in_blocks, block_size, g_data.meta_size);
+	//if (DEBUG && g_initialized)
+	//	fprintf(g_data.debug_out, "size in blks: %lu blk size %zu meta size: %zu\n", size_in_blocks, block_size, g_data.meta_size);
 	while (block_amt > 0)
 	{
 		block->next = NULL;
@@ -30,8 +30,8 @@ t_header    *request_space(size_t size, size_t units, unsigned long flags, unsig
 	size_t		to_alloc = size > g_data.page_size ? (g_data.page_size * ((size / g_data.page_size) + 1)) : g_data.page_size;
 	size_t		units_allocd;
 
-	if (DEBUG && g_initialized)
-		fprintf(g_data.debug_out, "to alloc %zu\n", to_alloc);
+	//if (DEBUG && g_initialized)
+	//	fprintf(g_data.debug_out, "to alloc %zu\n", to_alloc);
 	t_header	*block = mmap(NULL, to_alloc, (PROT_READ | PROT_WRITE), (MAP_PRIVATE | MAP_ANONYMOUS), -1, 0);
 	if ((void*)block == MAP_FAILED)
 		return NULL;
@@ -45,8 +45,8 @@ t_header    *request_space(size_t size, size_t units, unsigned long flags, unsig
 		*amt = units_allocd;
 		init_blocks(block, units, units_allocd, flags);
 	}
-	if (DEBUG && g_initialized)
-		fprintf(g_data.debug_out, "reserved %zu bytes at %p\n", to_alloc, block);
+	//if (DEBUG && g_initialized)
+	//	fprintf(g_data.debug_out, "reserved %zu bytes at %p\n", to_alloc, block);
 	return (block);
 }
 
@@ -63,10 +63,10 @@ int		ft_malloc_init(void)
 		return -2;
 	g_data.large = NULL;
 	g_initialized = true;
-	if (DEBUG)
-		g_data.debug_out = fopen("/tmp/ft_malloc_debug", "wab+");
-	else
-		g_data.debug_out = stdout;
+	//if (DEBUG)
+	//	g_data.debug_out = fopen("/tmp/ft_malloc_debug", "wab+");
+	//else
+	//	g_data.debug_out = stdout;
 	return 0;
 }
 
@@ -78,8 +78,8 @@ t_header    *find_free_block(t_header **last, size_t size)
 		*last = current;
 		current = current->next;
 	}
-	if (current)
-		fprintf(g_data.debug_out, "found block\n");
+	//if (current)
+	//	fprintf(g_data.debug_out, "found block\n");
 	return current;
 }
 
@@ -96,11 +96,11 @@ void        *malloc(size_t size)
 	//printf("err = %d\n", err);
 	if (size == 0)
 		return NULL;
-	if (DEBUG)
-		fprintf(g_data.debug_out, "input size: %zu\n", size);
+	//if (DEBUG)
+	//	fprintf(g_data.debug_out, "input size: %zu\n", size);
 	size = g_data.meta_size * (size / g_data.meta_size) + (size % g_data.meta_size ? g_data.meta_size : 0);
-	if (DEBUG)
-		fprintf(g_data.debug_out, "meta size: %lu, new size: %zu\n", g_data.meta_size, size);
+	//if (DEBUG)
+	//	fprintf(g_data.debug_out, "meta size: %lu, new size: %zu\n", g_data.meta_size, size);
 	if (size <= TINY)
 	{
 		flags = 0x2;
