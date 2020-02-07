@@ -1,9 +1,6 @@
-#include "ft_malloc.h"
-#include "ft_malloc_deps.h"
-#include "libft.h"
-#include <stdio.h>
+#include "unit_tests.h"
 
-int main(void)
+int	unit_test2(void)
 {
 	printf("starting\n");
 	if (malloc(0))

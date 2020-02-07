@@ -43,8 +43,7 @@ bool					g_initialized;
 void        *ft_malloc(size_t size);
 void		ft_free(void *ptr);
 void		*ft_realloc(void *ptr, size_t size);
-
-int		ft_malloc_init(void);
-void	ft_putnbr_u_base_fd(unsigned long nb, int base, int fd);
+void		ft_malloc_init(void);
+void		ft_putnbr_u_base_fd(unsigned long nb, int base, int fd);
 
 #endif

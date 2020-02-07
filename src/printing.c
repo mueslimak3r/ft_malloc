@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   printing.c                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: calamber <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2020/02/07 01:09:05 by calamber          #+#    #+#             */
+/*   Updated: 2020/02/07 01:09:06 by calamber         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "ft_malloc_deps.h"
 
 void	print_nb(unsigned long nb, int byte_count, int base, int fd)
@@ -19,7 +31,8 @@ void	print_nb(unsigned long nb, int byte_count, int base, int fd)
 	{
 		while (nb > 0)
 		{
-			printed_chars[pos] = (base == 16) ? (hex_table[(long)(nb % base)]) : ((long)(nb % base) + '0');
+			printed_chars[pos] = (base == 16) ?
+				(hex_table[(long)(nb % base)]) : ((long)(nb % base) + '0');
 			nb /= base;
 			pos--;
 		}

@@ -26,8 +26,8 @@ $(NAME): $(OBJ)
 	@printf '\t%s' "$(CC) $(CFLAGS) -c -fpic -o $*.o $<" >> $@
 	@echo $@ >> all.log
 
-unit_test: all
-	$(CC) $(CFLAGS) unit_test1.c -L. -lftmalloc -Llibft -lft $(CFlAGS)
+unit_tests: all
+	$(CC) $(CFLAGS) -L. -lftmalloc -Llibft -lft unit_tests/*.c
 
 clean:
 	make clean -C libft
