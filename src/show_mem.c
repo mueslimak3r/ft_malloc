@@ -5,7 +5,7 @@ void		show_alloc_mem()
 	if (!g_initialized)
 		ft_malloc_init();
 	t_header	*current = g_data.tiny;
-	fprintf(g_data.debug_out, "SMALL:\n");
+	fprintf(g_data.debug_out, "ALLOCD:\nSMALL:\n");
 	while (current)
 	{
 		if (current->flags & 0x1)
@@ -44,7 +44,7 @@ void		show_free_mem()
 	if (!g_initialized)
 		ft_malloc_init();
 	t_header	*current = g_data.tiny;
-	fprintf(g_data.debug_out, "TINY:\n");
+	fprintf(g_data.debug_out, "FREE:\nTINY:\n");
 	while (current)
 	{
 		if (!(current->flags & 0x1))

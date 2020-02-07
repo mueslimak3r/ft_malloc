@@ -1,3 +1,2 @@
 #!/bin/bash
-export LD_LIBRARY_PATH=.:$LD_LIBRARY_PATH
-./test
+export LD_LIBRARY_PATH=.:$LD_LIBRARY_PATH ; ./test

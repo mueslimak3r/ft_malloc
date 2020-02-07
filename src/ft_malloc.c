@@ -9,7 +9,7 @@ void		init_blocks(t_header *block, size_t block_size, size_t block_amt, unsigned
 	if (!block)
 		return ;
 	size_in_blocks = block_size / g_data.meta_size;
-	if (DEBUG)
+	if (DEBUG && g_initialized)
 		fprintf(g_data.debug_out, "size in blks: %lu blk size %zu meta size: %zu\n", size_in_blocks, block_size, g_data.meta_size);
 	while (block_amt > 0)
 	{
@@ -30,7 +30,8 @@ t_header    *request_space(size_t size, size_t units, unsigned long flags, unsig
 	size_t		to_alloc = size > g_data.page_size ? (g_data.page_size * ((size / g_data.page_size) + 1)) : g_data.page_size;
 	size_t		units_allocd;
 
-	fprintf(g_data.debug_out, "to alloc %zu\n", to_alloc);
+	if (DEBUG && g_initialized)
+		fprintf(g_data.debug_out, "to alloc %zu\n", to_alloc);
 	t_header	*block = mmap(NULL, to_alloc, (PROT_READ | PROT_WRITE), (MAP_PRIVATE | MAP_ANONYMOUS), -1, 0);
 	if ((void*)block == MAP_FAILED)
 		return NULL;
@@ -44,26 +45,29 @@ t_header    *request_space(size_t size, size_t units, unsigned long flags, unsig
 		*amt = units_allocd;
 		init_blocks(block, units, units_allocd, flags);
 	}
-	if (DEBUG)
+	if (DEBUG && g_initialized)
 		fprintf(g_data.debug_out, "reserved %zu bytes at %p\n", to_alloc, block);
 	return (block);
 }
 
-void		ft_malloc_init(void)
+int		ft_malloc_init(void)
 {
-	if (DEBUG)
-		g_data.debug_out = fopen("/tmp/ft_malloc_debug", "wab+");
-	else
-		g_data.debug_out = stdout;
+	//printf("yo\n");
 	g_data.meta_size = sizeof(t_header);
 	g_data.page_size = (size_t)getpagesize();
 	g_data.tiny = request_space(MIN_ALLOC * (TINY + g_data.meta_size), TINY, 0x2, &g_data.tiny_amt);
 	if (!g_data.tiny)
-		return ;
+		return -1;
 	g_data.small = request_space(MIN_ALLOC * (SMALL + g_data.meta_size), SMALL, 0x4, &g_data.small_amt);
 	if (!g_data.small)
-		return ;
+		return -2;
+	g_data.large = NULL;
 	g_initialized = true;
+	if (DEBUG)
+		g_data.debug_out = fopen("/tmp/ft_malloc_debug", "wab+");
+	else
+		g_data.debug_out = stdout;
+	return 0;
 }
 
 t_header    *find_free_block(t_header **last, size_t size)
@@ -85,9 +89,11 @@ void        *malloc(size_t size)
 	t_header		*last;
 	size_t			block_size;
 	unsigned int	flags;
+	//int err = 0;
 
 	if (!g_initialized)
 		ft_malloc_init();
+	//printf("err = %d\n", err);
 	if (size == 0)
 		return NULL;
 	if (DEBUG)

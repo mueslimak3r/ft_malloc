@@ -7,7 +7,7 @@ MODULES := src includes
 LIBDIRS := libft
 #LIBS := #-Llibft -lft
 LIBS :=
-CFLAGS += -Ilibft/includes -Iincludes -Wall -Werror -Wextra -g#-fsanitize=address 
+CFLAGS += -Ilibft/includes -Iincludes -Wall -Werror -Wextra -g #-fsanitize=address
 MODNAME := module.mk
 SRC :=
 
@@ -28,7 +28,7 @@ $(NAME): $(OBJ)
 	@echo $@ >> all.log
 
 test: all
-	$(CC) $(CFLAGS) main.c -L. -lftmalloc -Llibft -lft -o test
+	$(CC) $(CFLAGS) main.c -L. -lftmalloc -Llibft -lft $(CFlAGS) -o test
 
 clean:
 	make clean -C libft
