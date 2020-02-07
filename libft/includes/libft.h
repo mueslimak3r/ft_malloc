@@ -99,7 +99,6 @@ char				*ft_makepath(char *s1, char *s2, char c);
 char				*ft_strndup(const char *src, size_t len);
 int					ft_returnfree(char **ptr, int ret);
 int					ft_checkifc(char in, char c);
-void				*ft_realloc(void *thing, size_t orig_size, size_t size);
 char				*ft_strjoin_array(char **strs, char *tok);
 int					ft_atoi_base(char *str, const int base);
 char				ft_isspace(unsigned char c);

@@ -12,7 +12,7 @@ SRC +=	$(DIR)/ft_memset.c		$(DIR)/ft_bzero.c			$(DIR)/ft_memcpy.c			$(DIR)/ft_me
 		$(DIR)/ft_putendl_fd.c	$(DIR)/ft_putnbr_fd.c 		$(DIR)/ft_lstnew.c			$(DIR)/ft_lstdelone.c	$(DIR)/ft_lstdel.c		\
 		$(DIR)/ft_lstadd.c		$(DIR)/ft_lstiter.c 		$(DIR)/ft_lstmap.c			$(DIR)/ft_cntwords.c	$(DIR)/ft_isupper.c		\
 		$(DIR)/ft_strcase.c		$(DIR)/ft_itoa_base.c 		$(DIR)/get_next_line.c		$(DIR)/ft_arraydel.c	$(DIR)/ft_makepath.c	\
-		$(DIR)/ft_strndup.c		$(DIR)/ft_returnfree.c 		$(DIR)/ft_readstdin_line.c	$(DIR)/ft_checkifc.c	$(DIR)/ft_realloc.c		\
+		$(DIR)/ft_strndup.c		$(DIR)/ft_returnfree.c 		$(DIR)/ft_readstdin_line.c	$(DIR)/ft_checkifc.c							\
 		$(DIR)/ft_isspace.c		$(DIR)/ft_cntwords_space.c	$(DIR)/ft_strsplit_space.c	$(DIR)/ft_termcap.c		$(DIR)/ft_isnumber.c	\
 		$(DIR)/ft_atoi_base.c	$(DIR)/ft_cntdigit.c		$(DIR)/ft_uitoa_base.c		$(DIR)/ft_strcat_cpy.c	$(DIR)/ft_isprintable.c	\
 		$(DIR)/ft_strjoin_free.c

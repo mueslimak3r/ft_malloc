@@ -7,7 +7,7 @@
 #include <stdbool.h>
 
 #include <stdio.h> // remove later
-
+#include "libft.h"
 // mmap(2) munmap(2) getpagesize(3) getrlimit(2) libpthread
 #define MIN_ALLOC 100
 #define TINY 224
