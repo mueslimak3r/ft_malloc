@@ -12,8 +12,6 @@ int main(void)
 
 	printf("\nalloc'd memory:\n");
 	show_alloc_mem();
-	printf("\nfree memory:\n");
-	show_free_mem();
 
 	char *ref = "hello world";
 	int len = ft_strlen(ref);
@@ -32,8 +30,6 @@ int main(void)
 	printf("|%s| i: %d\n", s, i);
 	printf("\nalloc'd memory:\n");
 	show_alloc_mem();
-	printf("\nfree memory:\n");
-	show_free_mem();
 
 	printf("\n");
 	char *s2 = malloc(len + 1);
@@ -50,47 +46,33 @@ int main(void)
 	printf("|%s| i: %d\n", s2, i);
 	printf("\nalloc'd memory:\n");
 	show_alloc_mem();
-	printf("\nfree memory:\n");
-	show_free_mem();
-
 
 	printf("\nfreeing s2...\n");
 	free(s2);
 	printf("\nalloc'd memory:\n");
 	show_alloc_mem();
-	printf("\nfree memory:\n");
-	show_free_mem();
 
 	printf("\nfreeing s1...\n");
 	free(s);
 	printf("\nalloc'd memory:\n");
 	show_alloc_mem();
-	printf("\nfree memory:\n");
-	show_free_mem();
 
 	char *large_mem = malloc(8192);
-	int nb;
-	for (nb = 0; nb < 8191; nb++)
+	if (!large_mem)
 	{
-		large_mem[nb] = 'A';//((int)'A' + i + 1) % 26;
+		;
 	}
-	large_mem[nb] = '\0';
-	printf("%s\n", large_mem);
 	char *large_two = malloc(8192);
-	for (nb = 0; nb < 8191; nb++)
+	if (!large_two)
 	{
-		large_two[nb] = 'A';//((int)'A' + i + 1) % 26;
+		;
 	}
-	large_two[nb] = '\0';
-	printf("%s\n", large_two);
 	printf("\nalloc'd memory:\n");
 	show_alloc_mem();
-	printf("\nfree memory:\n");
-	show_free_mem();
+
 	free(large_mem);
 	printf("\nalloc'd memory:\n");
 	show_alloc_mem();
-	printf("\nfree memory:\n");
-	show_free_mem();
+	count_blocks();
     return (0);
 }

@@ -42,7 +42,8 @@ t_header    *request_space(size_t size, size_t units, unsigned long flags, unsig
 	if (!(flags & 0x8))
 	{
 		units_allocd = (block->size + 1) / ((units / g_data.meta_size) + 1);
-		*amt = units_allocd;
+		if (amt)
+			*amt += units_allocd;
 		init_blocks(block, units, units_allocd, flags);
 	}
 	//if (DEBUG && g_initialized)
@@ -82,7 +83,7 @@ t_header    *find_free_block(t_header **last, size_t size)
 	return current;
 }
 
-void        *malloc(size_t size)
+void        *ft_malloc(size_t size)
 {
 	t_header		*block;
 	t_header		*last;
@@ -124,7 +125,7 @@ void        *malloc(size_t size)
 		if (flags == 0x8)
 			block = request_space(size + g_data.meta_size, 1, 0x8, NULL);
 		else
-			block = request_space(MIN_ALLOC * (block_size + g_data.meta_size), block_size, flags, flags == 0x2 ? &g_data.tiny_amt : &g_data.small_amt);
+			block = request_space(MIN_ALLOC * (block_size + g_data.meta_size), block_size, flags, (flags == 0x2 ? &g_data.tiny_amt : &g_data.small_amt));
 		if (!block)
 			return (NULL);
 		block->prev = NULL;
@@ -139,4 +140,9 @@ void        *malloc(size_t size)
 	if (block)
 		block->flags |= 0x1;
 	return(block + 1);
+}
+
+void        *malloc(size_t size)
+{
+	return (ft_malloc(size));
 }

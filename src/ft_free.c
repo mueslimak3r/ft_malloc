@@ -1,5 +1,5 @@
 #include "ft_malloc_deps.h"
-#include "ft_malloc.h"
+
 void		check_unmap(t_header *page_start, unsigned long flags)
 {
 	t_header	*tmp = page_start;
@@ -25,24 +25,29 @@ void		check_unmap(t_header *page_start, unsigned long flags)
 		return ;
 	}
 
-	if (page_start->flags & 0x2)
+	if (flags & 0x2)
 		allocs_per_page = g_data.page_size / (TINY + g_data.meta_size);
-	else if (page_start->flags & 0x4)
+	else if (flags & 0x4)
 		allocs_per_page = g_data.page_size / (SMALL + g_data.meta_size);
 	else
 		return ;
 
 	//if (DEBUG)
 	//	fprintf(g_data.debug_out, "tiny amt %lu small amt %lu\n", g_data.tiny_amt, g_data.small_amt);
-	if (page_start->flags & 0x2 && g_data.tiny_amt - allocs_per_page < MIN_ALLOC)
+	printf("looking allocs_pp %lu tiny %lu small %lu flags %lu\n", allocs_per_page, g_data.tiny_amt, g_data.small_amt, flags);
+	if (flags & 0x2 && g_data.tiny_amt - allocs_per_page < MIN_ALLOC)
 		return ;
-	else if (page_start->flags & 0x4 && g_data.small_amt - allocs_per_page < MIN_ALLOC)
+	else if (flags & 0x4 && g_data.small_amt - allocs_per_page < MIN_ALLOC)
 		return ;
 
+	printf("looking...\n");
 	while (tmp && (unsigned long)tmp < (unsigned long)page_start + g_data.page_size)
 	{
 		if (tmp->flags & 0x1)
+		{
+			printf("found allocd block\n");
 			return ;
+		}
 		last = tmp;
 		tmp = tmp->next;
 	}
@@ -50,16 +55,14 @@ void		check_unmap(t_header *page_start, unsigned long flags)
 		page_start->prev->next = last->next;
 	if (last && last->next)
 		last->next->prev = page_start->prev;
-	if (page_start == g_data.tiny)
-	{
+	if (flags == 0x2)
 		g_data.tiny_amt -= allocs_per_page;
-		g_data.tiny = last ? last->next : NULL;
-	}
-	else if (page_start == g_data.small)
-	{
+	else
 		g_data.small_amt -= allocs_per_page;
+	if (page_start == g_data.tiny)
+		g_data.tiny = last ? last->next : NULL;
+	else if (page_start == g_data.small)
 		g_data.small = last ? last->next : NULL;
-	}
 /*
 	if (DEBUG)
 	{
@@ -70,10 +73,11 @@ void		check_unmap(t_header *page_start, unsigned long flags)
 		show_free_mem();
 	}
 */
+	printf("unmapping");
 	munmap(page_start, g_data.page_size);
 }
 
-void		free(void *ptr)
+void		ft_free(void *ptr)
 {
 	if (!ptr)
 		return ;
@@ -98,4 +102,9 @@ void		free(void *ptr)
 	}
 
 	//fprintf(g_data.debug_out, "FINISHED FREEING %p\n", block_ptr);
+}
+
+void		free(void *ptr)
+{
+	ft_free(ptr);
 }
