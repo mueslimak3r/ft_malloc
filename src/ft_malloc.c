@@ -52,7 +52,6 @@ t_header    *request_space(size_t size, size_t units, unsigned long flags, unsig
 
 int		ft_malloc_init(void)
 {
-	//printf("yo\n");
 	g_data.meta_size = sizeof(t_header);
 	g_data.page_size = (size_t)getpagesize();
 	g_data.tiny = request_space(MIN_ALLOC * (TINY + g_data.meta_size), TINY, 0x2, &g_data.tiny_amt);

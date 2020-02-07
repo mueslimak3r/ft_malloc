@@ -41,5 +41,6 @@ t_malloc_data			g_data;
 bool					g_initialized;
 
 int		ft_malloc_init(void);
+void	ft_putnbr_u_base_fd(unsigned long nb, int base, int fd);
 
 #endif
