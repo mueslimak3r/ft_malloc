@@ -11,7 +11,7 @@ int	unit_test3(void)
 	void *tiny;
 	tiny = malloc(TINY / 2);
 	printf("____________________________________________________________\n");
-	printf("original: %p\n", tiny);
+	printf("mallocd %d bytes from TINY zone at %p\n", TINY / 2, tiny);
 	show_alloc_mem();
 	count_blocks();
 	tiny = realloc(tiny, TINY);
@@ -21,7 +21,7 @@ int	unit_test3(void)
 	printf("____________________________________________________________\n");
 
 	tiny = realloc(tiny, SMALL);
-	printf("____________________________________________________________\n");
+	printf("\n____________________________________________________________\n");
 	printf("reallocd2: %p\n", tiny);
 	show_alloc_mem();
 	count_blocks();

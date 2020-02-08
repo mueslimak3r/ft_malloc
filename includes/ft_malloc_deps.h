@@ -5,7 +5,6 @@
 #include <sys/mman.h>
 #include <unistd.h>
 #include <stdbool.h>
-#include <pthread.h>
 #include <stdio.h> // remove later
 #include "libft.h"
 // mmap(2) munmap(2) getpagesize(3) getrlimit(2) libpthread
@@ -38,7 +37,6 @@ struct s_malloc_data
 };
 
 t_malloc_data			g_data;
-pthread_mutex_t			g_mutex_lock;
 bool					g_initialized;
 
 void        *ft_malloc(size_t size);

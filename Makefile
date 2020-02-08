@@ -5,7 +5,7 @@ all: $(NAME)
 
 MODULES := src includes
 LIBDIRS := libft
-LIBS := -Llibft -lft -lpthread
+LIBS := -Llibft -lft
 CFLAGS += -Ilibft/includes -Iincludes -Wall -Werror -Wextra -g -fsanitize=address
 MODNAME := module.mk
 SRC :=

@@ -51,7 +51,6 @@ void		ft_free(void *ptr)
 
 	if (ptr == NULL || !g_initialized)
 		return ;
-	pthread_mutex_lock(&g_mutex_lock);
 	block_ptr = ((t_header*)ptr) - 1;
 	if (!block_ptr)
 		return ;
@@ -81,7 +80,6 @@ void		ft_free(void *ptr)
 	}
 	else
 		block_ptr->flags ^= 0x1;
-	pthread_mutex_unlock(&g_mutex_lock);
 }
 
 void		free(void *ptr)

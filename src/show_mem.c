@@ -32,9 +32,11 @@ void		get_blk_data(t_header *cur, char *name)
 
 void		count_blocks()
 {
+	printf("\e[1;32m");
 	get_blk_data(g_data.tiny, "tiny");
 	get_blk_data(g_data.small, "small");
 	get_blk_data(g_data.large, "large");
+	printf("\e[0m");
 }
 
 void		print_mem(char *name, t_header *cur, int freed)
@@ -55,16 +57,20 @@ void		show_alloc_mem()
 {
 	if (!g_initialized)
 		ft_malloc_init();
+	printf("\e[1;35m*****************\nALLOCD MEMORY:");
 	print_mem("TINY:", g_data.tiny, 0);
 	print_mem("SMALL:", g_data.small, 0);
 	print_mem("LARGE:", g_data.large, 0);
+	printf("*****************\e[0m\n");
 }
 
 void		show_free_mem()
 {
 	if (!g_initialized)
 		ft_malloc_init();
+	printf("\e[1;34m*****************\nFREE MEMORY:");
 	print_mem("TINY:", g_data.tiny, 1);
 	print_mem("SMALL:", g_data.small, 1);
 	print_mem("LARGE:", g_data.large, 1);
+	printf("*****************\e[0m\n");
 }
