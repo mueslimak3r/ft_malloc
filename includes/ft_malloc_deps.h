@@ -8,10 +8,24 @@
 #include <stdio.h> // remove later
 #include "libft.h"
 // mmap(2) munmap(2) getpagesize(3) getrlimit(2) libpthread
+
+/*
+** zones
+*/
+
 #define MIN_ALLOC 100
 #define TINY 224
 #define SMALL 2016
 #define DEBUG 0
+
+/*
+** block flags bitfield values
+*/
+
+#define TINY_FLAG 		2u
+#define SMALL_FLAG		4u
+#define LARGE_FLAG		8u
+#define IS_ALLOCD_FLAG	1u
 
 typedef struct s_header         t_header;
 typedef struct s_malloc_data    t_malloc_data;

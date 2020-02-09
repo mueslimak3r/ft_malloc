@@ -49,7 +49,7 @@ t_header    *request_space(size_t size, size_t units, unsigned long flags, unsig
 	block->prev = NULL;
 	block->size = (to_alloc / g_data.meta_size) - 1;
 	block->flags = flags;
-	if (!(flags & 0x8))
+	if (!(flags & LARGE_FLAG))
 	{
 		units_allocd = (block->size + 1) / ((units / g_data.meta_size) + 1);
 		if (amt)
@@ -63,10 +63,10 @@ void		ft_malloc_init(void)
 {
 	g_data.meta_size = sizeof(t_header);
 	g_data.page_size = (size_t)getpagesize();
-	g_data.tiny = request_space(MIN_ALLOC * (TINY + g_data.meta_size), TINY, 0x2, &g_data.tiny_amt);
+	g_data.tiny = request_space(MIN_ALLOC * (TINY + g_data.meta_size), TINY, TINY_FLAG, &g_data.tiny_amt);
 	if (!g_data.tiny)
 		return ;
-	g_data.small = request_space(MIN_ALLOC * (SMALL + g_data.meta_size), SMALL, 0x4, &g_data.small_amt);
+	g_data.small = request_space(MIN_ALLOC * (SMALL + g_data.meta_size), SMALL, SMALL_FLAG, &g_data.small_amt);
 	if (!g_data.small)
 		return ;
 	g_data.large = NULL;
@@ -78,7 +78,7 @@ t_header    *find_free_block(t_header **last, size_t size)
 	t_header *current;
 
 	current = last ? *last : NULL;
-	while (current && !(!(current->flags & 0x1) && current->size >= size / g_data.meta_size))
+	while (current && !(!(current->flags & IS_ALLOCD_FLAG) && current->size >= size / g_data.meta_size))
 	{
 		*last = current;
 		current = current->next;
@@ -90,19 +90,19 @@ void		get_type(size_t *flags, size_t *block_size, t_header **last, size_t size)
 {
 	if (size <= TINY)
 	{
-		*flags = 0x2;
+		*flags = TINY_FLAG;
 		*block_size = TINY;
 		*last = g_data.tiny;
 	}
 	else if (size > TINY && size <= SMALL)
 	{
-		*flags = 0x4;
+		*flags = SMALL_FLAG;
 		*block_size = SMALL;
 		*last = g_data.small;
 	}
 	else
 	{
-		*flags = 0x8;
+		*flags = LARGE_FLAG;
 		*last = g_data.large;
 		*block_size = size;
 	}
@@ -116,7 +116,7 @@ void		join_new_block(t_header *new, t_header *last, size_t flags)
 		new->prev = last;
 		last->next = new;
 	}
-	else if (flags == 0x8)
+	else if (flags == LARGE_FLAG)
 		g_data.large = new;
 }
 
@@ -137,17 +137,17 @@ void        *ft_malloc(size_t size)
 	block = find_free_block(&last, size);
 	if (!block)
 	{
-		if (flags == 0x8)
-			block = request_space(size + g_data.meta_size, 1, 0x8, NULL);
+		if (flags == LARGE_FLAG)
+			block = request_space(size + g_data.meta_size, 1, flags, NULL);
 		else
 			block = request_space(MIN_ALLOC * (block_size + g_data.meta_size),
-			block_size, flags, (flags == 0x2 ? &g_data.tiny_amt : &g_data.small_amt));
+			block_size, flags, (flags == TINY_FLAG ? &g_data.tiny_amt : &g_data.small_amt));
 		if (!block)
 			return (NULL);
 		join_new_block(block, last, flags);
 	}
 	if (block)
-		block->flags |= 0x1;
+		block->flags |= IS_ALLOCD_FLAG;
 	return(block + 1);
 }
 

@@ -21,7 +21,7 @@ void		get_blk_data(t_header *cur, char *name)
 	allocd = 0;
 	while (cur)
 	{
-		if (cur->flags & 0x1)
+		if (cur->flags & IS_ALLOCD_FLAG)
 			allocd++;
 		else
 			freed++;
@@ -44,7 +44,7 @@ void		print_mem(char *name, t_header *cur, int freed)
 	printf("\n%s\n", name);
 	while (cur)
 	{
-		if ((freed && !(cur->flags & 0x1)) || (!freed && cur->flags & 0x1))
+		if ((freed && !(cur->flags & IS_ALLOCD_FLAG)) || (!freed && cur->flags & IS_ALLOCD_FLAG))
 		{
 			unsigned int type = cur->flags >> 1;
 			printf("addr: %p | bytes: %lu | type: %u | allocd: %lu|\n", cur, cur->size * g_data.meta_size + g_data.meta_size, type, cur->flags & 0x1);

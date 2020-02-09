@@ -10,7 +10,7 @@ int			find_allocd_block(t_header *page_start, t_header **last)
 	tmp = page_start;
 	while (tmp && (unsigned long)tmp < (unsigned long)page_start + g_data.page_size)
 	{
-		if (tmp->flags & 0x1)
+		if (tmp->flags & IS_ALLOCD_FLAG)
 			ret = 1;
 		*last = tmp;
 		tmp = tmp->next;
@@ -23,14 +23,14 @@ int			check_unmap(t_header *page_start, unsigned long flags)
 	t_header	*last;
 	unsigned long	allocs_per_page;
 
-	allocs_per_page = g_data.page_size / ((flags & 0x2 ? TINY : SMALL) + g_data.meta_size);
-	if (!page_start || (flags & 0x2 && g_data.tiny_amt - allocs_per_page <
-	MIN_ALLOC) || (flags & 0x4 && g_data.small_amt - allocs_per_page < MIN_ALLOC)
-	|| (find_allocd_block(page_start, &last)) || !(flags & 0x2 || flags & 0x4))
+	allocs_per_page = g_data.page_size / ((flags & TINY_FLAG ? TINY : SMALL) + g_data.meta_size);
+	if (!page_start || (flags & TINY_FLAG && g_data.tiny_amt - allocs_per_page <
+	MIN_ALLOC) || (flags & SMALL_FLAG && g_data.small_amt - allocs_per_page < MIN_ALLOC)
+	|| (find_allocd_block(page_start, &last)) || !(flags & TINY_FLAG || flags & SMALL_FLAG))
 		return (0);
-	if (flags & 0x2)
+	if (flags & TINY_FLAG)
 		g_data.tiny_amt -= allocs_per_page;
-	else if (flags & 0x4)
+	else if (flags & SMALL_FLAG)
 		g_data.small_amt -= allocs_per_page;
 	if (page_start == g_data.tiny)
 		g_data.tiny = last && (unsigned long)last->next >= (unsigned long)page_start + g_data.page_size ? last->next : NULL;
