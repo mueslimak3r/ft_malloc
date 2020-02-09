@@ -12,30 +12,49 @@
 
 #include "ft_malloc_deps.h"
 
-void		get_blk_data(t_header *cur, char *name)
+unsigned long				get_blk_data(t_header *cur, char *name)
 {
-	int			freed;
-	int			allocd;
+	unsigned long			freed;
+	unsigned long			allocd;
 
 	freed = 0;
 	allocd = 0;
 	while (cur)
 	{
 		if (cur->flags & IS_ALLOCD_FLAG)
-			allocd++;
+			allocd += (cur->flags & LARGE_FLAG ? cur->size * g_data.meta_size + g_data.meta_size : 1);
 		else
-			freed++;
+			freed += (cur->flags & LARGE_FLAG ? cur->size * g_data.meta_size + g_data.meta_size : 1);
 		cur = cur->next;
 	}
-	printf("%s data total: %d freed: %d allocd: %d\n", name, allocd + freed, freed, allocd);
+	printf("%s data total: %lu freed: %lu allocd: %lu\n", name, allocd + freed, freed, allocd);
+	return (allocd + freed);
 }
 
 void		count_blocks()
 {
+	unsigned long tiny_size;
+	unsigned long small_size;
+	unsigned long large_size;
+
 	printf("\e[1;32m");
-	get_blk_data(g_data.tiny, "tiny");
-	get_blk_data(g_data.small, "small");
-	get_blk_data(g_data.large, "large");
+	tiny_size = get_blk_data(g_data.tiny, "tiny") * (TINY + g_data.meta_size);
+	small_size = get_blk_data(g_data.small, "small") * (SMALL + g_data.meta_size);
+	large_size = get_blk_data(g_data.large, "large");
+
+	printf("total mapped bytes: %lu\n", g_data.debug_stats.bytes_mapped);
+	printf("tiny amt: ** logged %lu just found %lu **\nsmall amt: ** logged %lu just found %lu **\n",
+		g_data.tiny_amt * (TINY + g_data.meta_size), tiny_size, g_data.small_amt * (SMALL + g_data.meta_size), small_size);
+
+	unsigned long expected_used =
+		(g_data.tiny_amt * (TINY + g_data.meta_size)) + (g_data.small_amt * (SMALL + g_data.meta_size)) + large_size;
+	unsigned long actual_used = tiny_size + small_size + large_size;
+
+	printf("expected bytes in use: %lu\n", expected_used);
+	printf("actual bytes in use: %lu\n", actual_used);
+	printf("total unmapped bytes: %lu\n", g_data.debug_stats.bytes_unmapped);
+
+	printf("lost bytes: %lu\n", g_data.debug_stats.bytes_mapped - g_data.debug_stats.bytes_unmapped - actual_used);
 	printf("\e[0m");
 }
 

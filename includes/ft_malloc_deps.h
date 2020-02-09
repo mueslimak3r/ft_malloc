@@ -29,6 +29,7 @@
 
 typedef struct s_header         t_header;
 typedef struct s_malloc_data    t_malloc_data;
+typedef struct s_malloc_stats	t_malloc_stats;
 
 struct s_header
 {
@@ -38,16 +39,22 @@ struct s_header
 	unsigned long	flags;
 };
 
+struct s_malloc_stats
+{
+	unsigned long	bytes_mapped;
+	unsigned long	bytes_unmapped;
+};
+
 struct s_malloc_data
 {
 	t_header		*tiny;
 	t_header		*small;
 	t_header		*large;
-	FILE			*debug_out;
 	unsigned long	tiny_amt;
 	unsigned long	small_amt;
 	size_t			page_size;
 	size_t			meta_size;
+	t_malloc_stats	debug_stats;
 };
 
 t_malloc_data			g_data;

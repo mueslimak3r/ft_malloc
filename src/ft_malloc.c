@@ -45,6 +45,7 @@ t_header    *request_space(size_t size, size_t units, unsigned long flags, unsig
 	block = mmap(NULL, to_alloc, (PROT_READ | PROT_WRITE), (MAP_PRIVATE | MAP_ANONYMOUS), -1, 0);
 	if ((void*)block == MAP_FAILED)
 		return (NULL);
+	g_data.debug_stats.bytes_mapped += to_alloc;
 	block->next = NULL;
 	block->prev = NULL;
 	block->size = (to_alloc / g_data.meta_size) - 1;
@@ -63,13 +64,19 @@ void		ft_malloc_init(void)
 {
 	g_data.meta_size = sizeof(t_header);
 	g_data.page_size = (size_t)getpagesize();
+	g_data.debug_stats = (t_malloc_stats){ 0, 0 };
+	g_data.large = NULL;
 	g_data.tiny = request_space(MIN_ALLOC * (TINY + g_data.meta_size), TINY, TINY_FLAG, &g_data.tiny_amt);
 	if (!g_data.tiny)
 		return ;
 	g_data.small = request_space(MIN_ALLOC * (SMALL + g_data.meta_size), SMALL, SMALL_FLAG, &g_data.small_amt);
 	if (!g_data.small)
-		return ;
-	g_data.large = NULL;
+	{
+		g_data.debug_stats.bytes_unmapped += g_data.tiny_amt * (TINY + g_data.meta_size);
+		munmap(g_data.tiny, g_data.tiny_amt * (TINY + g_data.meta_size));
+		printf("WOAH\n");
+		exit(1);
+	}
 	g_initialized = true;
 }
 
@@ -118,6 +125,11 @@ void		join_new_block(t_header *new, t_header *last, size_t flags)
 	}
 	else if (flags == LARGE_FLAG)
 		g_data.large = new;
+	else
+	{
+		printf("WTF\n");
+		exit(1);
+	}
 }
 
 void        *ft_malloc(size_t size)
