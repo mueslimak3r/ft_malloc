@@ -60,3 +60,43 @@ void	ft_putnbr_u_base_fd(unsigned long nb, int base, int fd)
 	byte_count = count_bytes(nb, base);
 	print_nb(nb, byte_count + (base == 16 ? 2 : 0), base, fd);
 }
+
+int		handle_single(int fd, char **fmt, va_list *vargs)
+{
+	if (!*fmt)
+		return (0);
+	if (**fmt == '%' && *(*fmt + 1) == 's')
+		ft_putstr_fd(va_arg(*vargs, char*), fd);
+	else if (**fmt == '%' && *(*fmt + 1) == 'd')
+		ft_putnbr_u_base_fd(va_arg(*vargs, int), 10, fd);
+	else if (**fmt == '%' && *(*fmt + 1) && *(*fmt + 1) == 'p')
+		ft_putnbr_u_base_fd(va_arg(*vargs, long), 16, fd);
+	else
+		return (0);
+	*fmt += 2;
+	return (1);
+}
+
+int		ft_printf_fd(int fd, char *fmt, ...)
+{
+	va_list	vargs;
+
+	va_start(vargs, (char*)fmt);
+	while (*fmt)
+	{
+		if (handle_single(fd, &fmt, &vargs))
+			continue ;
+		else if (*fmt == '%' && *(fmt + 1) && *(fmt + 2) &&
+			ft_strncmp(fmt + 1, "lu", 2) == 0)
+		{
+			ft_putnbr_u_base_fd(va_arg(vargs, long), 10, fd);
+			fmt += 3;
+		}
+		else
+		{
+			ft_putchar_fd(*fmt, fd);
+			fmt += 1;
+		}
+	}
+	return (1);
+}
