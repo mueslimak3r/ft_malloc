@@ -62,6 +62,7 @@ t_header    *request_space(size_t size, size_t units, unsigned long flags, unsig
 
 void		ft_malloc_init(void)
 {
+	//ft_putstr_fd("INIT\n", 1);
 	g_data.meta_size = sizeof(t_header);
 	g_data.page_size = (size_t)getpagesize();
 	g_data.debug_stats = (t_malloc_stats){ 0, 0 };
@@ -139,9 +140,9 @@ void        *ft_malloc(size_t size)
 	size_t			block_size;
 	size_t			flags;
 
+	//ft_putstr_fd("MALLOC CALLED\n", 1);
 	if (!g_initialized)
 		ft_malloc_init();
-	//ft_putstr_fd("MALLOC CALLED\n", 1);
 	if (size == 0)
 		return NULL;
 	size = g_data.meta_size * (size / g_data.meta_size) + (size % g_data.meta_size ? g_data.meta_size : 0);
