@@ -12,7 +12,7 @@
 
 #include "ft_malloc_deps.h"
 
-void	print_nb(unsigned long nb, int byte_count, int base, int fd)
+void	print_nb(unsigned long long nb, int byte_count, int base, int fd)
 {
 	static char	*hex_table = "01234567890ABCDEF";
 	char		printed_chars[byte_count + 1];
@@ -32,7 +32,8 @@ void	print_nb(unsigned long nb, int byte_count, int base, int fd)
 		while (nb > 0)
 		{
 			printed_chars[pos] = (base == 16) ?
-				(hex_table[(long)(nb % base)]) : ((long)(nb % base) + '0');
+				(hex_table[(long long)(nb % base)]) :
+						((long long)(nb % base) + '0');
 			nb /= base;
 			pos--;
 		}
@@ -40,7 +41,7 @@ void	print_nb(unsigned long nb, int byte_count, int base, int fd)
 	ft_putstr_fd(printed_chars, fd);
 }
 
-int		count_bytes(unsigned long nb, int base)
+int		count_bytes(unsigned long long nb, int base)
 {
 	int	ret;
 
@@ -53,7 +54,7 @@ int		count_bytes(unsigned long nb, int base)
 	return (ret);
 }
 
-void	ft_putnbr_u_base_fd(unsigned long nb, int base, int fd)
+void	ft_putnbr_u_base_fd(unsigned long long nb, int base, int fd)
 {
 	int byte_count;
 
@@ -63,14 +64,14 @@ void	ft_putnbr_u_base_fd(unsigned long nb, int base, int fd)
 
 int		handle_single(int fd, char **fmt, va_list *vargs)
 {
-	if (!*fmt)
+	if (!*fmt || **fmt != '%' || !*(*fmt + 1))
 		return (0);
-	if (**fmt == '%' && *(*fmt + 1) == 's')
+	if (*(*fmt + 1) == 's')
 		ft_putstr_fd(va_arg(*vargs, char*), fd);
-	else if (**fmt == '%' && *(*fmt + 1) == 'd')
-		ft_putnbr_u_base_fd(va_arg(*vargs, int), 10, fd);
-	else if (**fmt == '%' && *(*fmt + 1) && *(*fmt + 1) == 'p')
-		ft_putnbr_u_base_fd(va_arg(*vargs, long), 16, fd);
+	else if (*(*fmt + 1) == 'u')
+		ft_putnbr_u_base_fd(va_arg(*vargs, unsigned int), 10, fd);
+	else if (*(*fmt + 1) == 'p')
+		ft_putnbr_u_base_fd((uintptr_t)va_arg(*vargs, int*), 16, fd);
 	else
 		return (0);
 	*fmt += 2;

@@ -36,9 +36,9 @@ t_header	*get_page_start(t_header *block_ptr)
 {
 	unsigned long offset;
 
-	if (block_ptr && (unsigned long)block_ptr >= g_data.page_size)
+	if (block_ptr && (uintptr_t)block_ptr >= g_data.page_size)
 	{
-		offset = (unsigned long)block_ptr % g_data.page_size;
+		offset = (uintptr_t)block_ptr % g_data.page_size;
 		if (offset)
 			offset /= g_data.meta_size;
 		return (block_ptr - offset);

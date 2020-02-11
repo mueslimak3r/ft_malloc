@@ -16,6 +16,7 @@
 # include <sys/mman.h>
 # include <unistd.h>
 # include <stdbool.h>
+# include <stdint.h>
 # include "libft.h"
 # include <stdarg.h>
 
@@ -62,8 +63,8 @@ struct			s_malloc_data
 	t_header		*large;
 	unsigned long	tiny_amt;
 	unsigned long	small_amt;
-	size_t			page_size;
-	size_t			meta_size;
+	unsigned int	page_size;
+	unsigned int	meta_size;
 	t_malloc_stats	debug_stats;
 };
 
@@ -74,7 +75,7 @@ void			*ft_malloc(size_t size);
 void			ft_free(void *ptr);
 void			*ft_realloc(void *ptr, size_t size);
 void			ft_malloc_init(void);
-void			ft_putnbr_u_base_fd(unsigned long nb, int base, int fd);
+void			ft_putnbr_u_base_fd(unsigned long long nb, int base, int fd);
 t_header		*request_space(size_t size, size_t units,
 					unsigned long flags, unsigned long *amt);
 int				ft_printf_fd(int fd, char *fmt, ...);

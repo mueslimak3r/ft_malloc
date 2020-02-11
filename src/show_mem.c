@@ -42,7 +42,7 @@ void			count_blocks(void)
 	unsigned long expected_used;
 	unsigned long actual_used;
 
-	ft_printf_fd(1, "\e[1;32m");
+	ft_printf_fd(1, "\e[1;32mp %u\nh %u\n", g_data.page_size, g_data.meta_size);
 	tiny_size = get_blk_data(g_data.tiny, "tiny") * (TINY + g_data.meta_size);
 	small_size = get_blk_data(g_data.small, "small") *
 							(SMALL + g_data.meta_size);
