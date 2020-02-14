@@ -34,7 +34,7 @@ all: $(NAME)
 $(NAME): $(OBJ)
 	make -C libft
 	$(CC) $(CFLAGS) -shared -fPIC $(OBJ) $(LIBS) -o $@
-	ln -s $(NAME) $(LINK_NAME)
+	ln -fs $(NAME) $(LINK_NAME)
 
 %.d : %.c
 	@./depend.sh $*.o $(CFLAGS) $< > $@

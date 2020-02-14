@@ -17,16 +17,20 @@ void		*ft_realloc(void *ptr, size_t size)
 	t_header	*block_ptr;
 	void		*new_ptr;
 
-	if (!ptr || size == 0 || !g_initialized)
+	ft_putstr("REALLOC\n");
+	if (size == 0)
 		return (NULL);
+	if (!ptr || !g_initialized)
+		return (ft_malloc(size));
 	block_ptr = (t_header*)ptr - 1;
 	if (size <= block_ptr->size * g_data.meta_size)
 		return (ptr);
 	new_ptr = ft_malloc(size);
 	if (!new_ptr)
-		return (NULL);
+		return (ptr);
 	ft_memcpy(new_ptr, ptr, block_ptr->size * g_data.meta_size);
 	ft_free(ptr);
+	ft_putstr("FINISHED REALLOC\n");
 	return (new_ptr);
 }
 

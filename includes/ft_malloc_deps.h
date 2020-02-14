@@ -74,6 +74,7 @@ bool			g_initialized;
 void			*ft_malloc(size_t size);
 void			ft_free(void *ptr);
 void			*ft_realloc(void *ptr, size_t size);
+void			*ft_calloc(size_t count, size_t size);
 void			ft_malloc_init(void);
 void			ft_putnbr_u_base_fd(unsigned long long nb, int base, int fd);
 t_header		*request_space(size_t size, size_t units,

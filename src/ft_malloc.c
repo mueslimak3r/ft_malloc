@@ -70,6 +70,7 @@ void		*ft_malloc(size_t size)
 	size_t			block_size;
 	size_t			flags;
 
+	ft_printf_fd(1, "MALLOC sz: %lu\n", (unsigned long)size);
 	(!g_initialized) ? (ft_malloc_init()) : 0;
 	if (size == 0)
 		return (NULL);
@@ -89,6 +90,7 @@ block_size, flags, (flags == TINY_FLAG ? &g_data.tiny_amt : &g_data.small_amt));
 		join_new_block(block, last, flags);
 	}
 	(block) ? (block->flags |= IS_ALLOCD_FLAG) : 0;
+	ft_printf_fd(1, "FINISHED MALLOC, returning block %p\n", block);
 	return (block + 1);
 }
 

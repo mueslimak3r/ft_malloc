@@ -14,11 +14,22 @@
 # define FT_MALLOC_H
 
 # include <stdio.h>
+# include <stdlib.h>
 # include <unistd.h>
 
-void		free(void *ptr);
+#ifndef	FALLBACK_FREE
+# define FALLBACK_FREE
+
+void(*fallback_free)(void*) = &free;
+
+#endif
+
+#ifdef FALLBACK_FREE
+	void		free(void *ptr);
+#endif
 void		*malloc(size_t size);
 void		*realloc(void *ptr, size_t size);
+void		*calloc(size_t count, size_t size);
 
 void		show_alloc_mem();
 void		show_free_mem();

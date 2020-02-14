@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include "ft_malloc_deps.h"
+#include "ft_malloc.h"
 
 int			find_allocd_block(t_header *page_start, t_header **last)
 {
@@ -27,7 +28,7 @@ int			find_allocd_block(t_header *page_start, t_header **last)
 		if (tmp->flags & IS_ALLOCD_FLAG)
 			ret = 1;
 		*last = tmp;
-		tmp = tmp->next;
+		tmp += page_start->size + 1;
 	}
 	return (ret);
 }
@@ -71,19 +72,44 @@ int			check_unmap(t_header *page_start, unsigned long flags)
 	(page_start == g_data.tiny) ? (g_data.tiny = next) : 0;
 	(page_start == g_data.small) ? (g_data.small = next) : 0;
 	g_data.debug_stats.bytes_unmapped += g_data.page_size;
+	ft_putstr("UNMAP TINY/SMALL\n");
 	munmap(page_start, g_data.page_size);
 	return (1);
+}
+
+int			find_in_bucket(t_header *block_ptr, t_header *bucket)
+{
+	while (bucket)
+	{
+		if (bucket == block_ptr)
+			return (1);
+		bucket = bucket->next;
+	}
+	return (0);
+}
+
+int			check_if_valid(t_header *block_ptr)
+{
+	if ((find_in_bucket(block_ptr, g_data.tiny)) || (find_in_bucket(block_ptr, g_data.small)) || (find_in_bucket(block_ptr, g_data.large)))
+		return (1);
+	return (0);
 }
 
 void		ft_free(void *ptr)
 {
 	t_header		*block_ptr;
 
+	ft_putstr("FREE START\n");
 	if (ptr == NULL || !g_initialized)
 		return ;
 	block_ptr = ((t_header*)ptr) - 1;
-	if (!block_ptr)
+	ft_printf_fd(1, "FREE %p with data ptr %p sz: %lu\n", block_ptr, ptr, block_ptr ? block_ptr->size : 0);
+	if (!block_ptr || !(check_if_valid(block_ptr)))
+	{
+		ft_putstr("invalid addr\n");
+		//fallback_free(ptr);
 		return ;
+	}
 	block_ptr->flags ^= 0x1;
 	if (block_ptr->flags & 0x8)
 	{
@@ -95,11 +121,13 @@ void		ft_free(void *ptr)
 			g_data.large = g_data.large->next;
 		g_data.debug_stats.bytes_unmapped += block_ptr->size *
 						g_data.meta_size + g_data.meta_size;
+		ft_putstr("UNMAP LARGE\n");
 		munmap(block_ptr, block_ptr->size *
 						g_data.meta_size + g_data.meta_size);
 	}
 	else
 		check_unmap(get_page_start(block_ptr), block_ptr->flags);
+	ft_putstr("FINISHED FREE\n");
 }
 
 void		free(void *ptr)
