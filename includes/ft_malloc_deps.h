@@ -17,8 +17,11 @@
 # include <unistd.h>
 # include <stdbool.h>
 # include <stdint.h>
-# include "libft.h"
+# include <stdlib.h>
 # include <stdarg.h>
+#include <errno.h>
+ #include <stdio.h>
+ #include <string.h>
 
 /*
 ** zones
@@ -61,6 +64,8 @@ struct			s_malloc_data
 	t_header		*tiny;
 	t_header		*small;
 	t_header		*large;
+	void			*heap_start;
+	void			*heap_end;
 	unsigned long	tiny_amt;
 	unsigned long	small_amt;
 	unsigned int	page_size;
@@ -68,8 +73,8 @@ struct			s_malloc_data
 	t_malloc_stats	debug_stats;
 };
 
-t_malloc_data	g_data;
-bool			g_initialized;
+t_malloc_data	*g_data;
+//static bool				g_initialized;
 
 void			*ft_malloc(size_t size);
 void			ft_free(void *ptr);
@@ -80,4 +85,5 @@ void			ft_putnbr_u_base_fd(unsigned long long nb, int base, int fd);
 t_header		*request_space(size_t size, size_t units,
 					unsigned long flags, unsigned long *amt);
 int				ft_printf_fd(int fd, char *fmt, ...);
+void			ft_putstr_fd(char const *s, int fd);
 #endif

@@ -88,14 +88,14 @@ int		ft_printf_fd(int fd, char *fmt, ...)
 		if (handle_single(fd, &fmt, &vargs))
 			continue ;
 		else if (*fmt == '%' && *(fmt + 1) && *(fmt + 2) &&
-			ft_strncmp(fmt + 1, "lu", 2) == 0)
+			*(fmt + 1) == 'l' && *(fmt + 2) == 'u')
 		{
 			ft_putnbr_u_base_fd(va_arg(vargs, long), 10, fd);
 			fmt += 3;
 		}
 		else
 		{
-			ft_putchar_fd(*fmt, fd);
+			write(fd, &(*fmt), 1);
 			fmt += 1;
 		}
 	}

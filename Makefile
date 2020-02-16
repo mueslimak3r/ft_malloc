@@ -1,11 +1,10 @@
 CC := gcc
 
-
 MODULES := src includes
-LIBDIRS := libft
-LIBS := -Llibft -lft
+#LIBS := #-Llibft -lft
 
-CFLAGS += -Ilibft/includes -Iincludes -Wall -Werror -Wextra
+CFLAGS +=  -Iincludes -Wall -Werror -Wextra -fPIC
+#CFLAGS += -Ilibft/includes
 #CFLAGS += -g -fsanitize=address
 
 MODNAME := module.mk
@@ -32,13 +31,13 @@ all: $(NAME)
 -include $(DEP)
 
 $(NAME): $(OBJ)
-	make -C libft
-	$(CC) $(CFLAGS) -shared -fPIC $(OBJ) $(LIBS) -o $@
+	#make -C libft
+	$(CC) $(CFLAGS) $(OBJ) -shared -o $@
 	ln -fs $(NAME) $(LINK_NAME)
 
 %.d : %.c
 	@./depend.sh $*.o $(CFLAGS) $< > $@
-	@printf '\t%s' "$(CC) $(CFLAGS) -fPIC -c -o $*.o $<" >> $@
+	@printf '\t%s' "$(CC) $(CFLAGS) -c -o $*.o $<" >> $@
 	@echo $@ >> all.log
 
 unit_tests: all
@@ -56,7 +55,7 @@ clean_nolib:
 	@rm -f all.log
 
 fclean: clean_nolib
-	make fclean -C libft
+	#make fclean -C libft
 	rm -f $(NAME)
 	rm -f $(LINK_NAME)
 	rm -rf a.out*

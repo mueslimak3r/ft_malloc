@@ -1,29 +1,25 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_malloc.h                                        :+:      :+:    :+:   */
+/*   tools.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: calamber <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2020/02/10 02:47:55 by calamber          #+#    #+#             */
-/*   Updated: 2020/02/10 02:47:56 by calamber         ###   ########.fr       */
+/*   Created: 2020/02/15 13:55:48 by calamber          #+#    #+#             */
+/*   Updated: 2020/02/15 13:55:49 by calamber         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef FT_MALLOC_H
-# define FT_MALLOC_H
+#include "ft_malloc_deps.h"
 
-# include <stdio.h>
-# include <stdlib.h>
-# include <unistd.h>
+void	ft_putstr_fd(char const *s, int fd)
+{
+	size_t	i;
 
-void		free(void *ptr);
-void		*malloc(size_t size);
-void		*realloc(void *ptr, size_t size);
-void		*calloc(size_t count, size_t size);
-
-void		show_alloc_mem();
-void		show_free_mem();
-void		count_blocks();
-
-#endif
+	i = 0;
+	if (!s)
+		return ;
+	while (s[i])
+		i++;
+	write(fd, s, i);
+}
