@@ -103,12 +103,13 @@ void		ft_free(void *ptr)
 {
 	t_header		*block_ptr;
 
-	ft_printf_fd(1, "FREE\n");
+	//ft_printf_fd(1, "FREE\n");
 	if (ptr == NULL || !g_data)// || ptr < g_data->heap_start || ptr >= g_data->heap_end)
 		return ;
 	block_ptr = ((t_header*)ptr) - 1;
 	if (!block_ptr || !(check_if_valid(block_ptr)))
 		return ;
+	/*
 	ft_printf_fd(1, "free addr %p block %p\n", block_ptr, ptr);
 	if (!g_data)
 		ft_printf_fd(1, "g_data null\n");
@@ -117,8 +118,9 @@ void		ft_free(void *ptr)
 		ft_printf_fd(1, "free g_data: %p tiny %p small %p large %p\n", g_data, g_data->tiny, g_data->small, g_data->large);
 		ft_printf_fd(1, "tiny sz %lu small sz %lu\n", g_data->tiny_amt, g_data->small_amt);
 	}
+	*/
 	block_ptr->flags ^= 0x1;
-	/*
+
 	if (block_ptr->flags & 0x8)
 	{
 		if (block_ptr->prev)
@@ -131,14 +133,13 @@ void		ft_free(void *ptr)
 						g_data->meta_size) + g_data->meta_size;
 		munmap(block_ptr, (block_ptr->size * g_data->meta_size) + g_data->meta_size);
 	}
-	*/
-	//else
-	//	check_unmap(get_page_start(block_ptr), block_ptr->flags);
-	ft_printf_fd(1, "FREE COMPLETE\n");
+	else
+		check_unmap(get_page_start(block_ptr), block_ptr->flags);
+	//ft_printf_fd(1, "FREE COMPLETE\n");
 }
 
 void		free(void *ptr)
 {
 	ft_free(ptr);
-	ft_printf_fd(1, "FREE STOP\n");
+	//ft_printf_fd(1, "FREE STOP\n");
 }

@@ -29,7 +29,7 @@ void		*ft_realloc(void *ptr, size_t size)
 	t_header	*block_ptr;
 	void		*new_ptr;
 
-	ft_printf_fd(1, "REALLOC\n");
+	//ft_printf_fd(1, "REALLOC\n");
 	if (size == 0)
 		return (NULL);
 	if (!ptr || !g_data)

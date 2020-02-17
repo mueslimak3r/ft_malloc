@@ -28,9 +28,9 @@
 */
 
 # define MIN_ALLOC 100
-# define TINY 224
-# define SMALL 2016
-# define DEBUG 0
+# define TINY	64
+# define SMALL	1024
+# define DEBUG	0
 
 /*
 ** block flags bitfield values
@@ -47,10 +47,10 @@ typedef struct s_malloc_stats	t_malloc_stats;
 
 struct			s_header
 {
-	t_header		*next;
-	t_header		*prev;
 	unsigned long	size;
 	unsigned long	flags;
+	t_header		*next;
+	t_header		*prev;
 };
 
 struct			s_malloc_stats

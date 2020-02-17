@@ -70,13 +70,14 @@ void		*ft_malloc(size_t size)
 	size_t			block_size;
 	size_t			flags;
 
-	ft_printf_fd(1, "MALLOC\n");
+	//ft_printf_fd(1, "MALLOC\n");
 	if (!g_data)
 	{
 		ft_malloc_init();
 	}
 	if (size == 0)
 		return (NULL);
+	/*
 	if (!g_data)
 		ft_printf_fd(1, "g_data null\n");
 	else
@@ -84,16 +85,21 @@ void		*ft_malloc(size_t size)
 		ft_printf_fd(1, "malloc g_data: %p tiny %p small %p large %p\n", g_data, g_data->tiny, g_data->small, g_data->large);
 		ft_printf_fd(1, "tiny sz %lu small sz %lu\n", g_data->tiny_amt, g_data->small_amt);
 	}
-	size_t nsize = size;
-	size = g_data->meta_size * (size / g_data->meta_size) +
-			(size % g_data->meta_size ? g_data->meta_size : 0);
-	ft_printf_fd(1, "size given %lu size calc %lu", nsize, size);
+	*/
+	//size_t nsize = size;
+	//size = g_data->meta_size * (size / g_data->meta_size) +
+	//		(size % g_data->meta_size ? g_data->meta_size : 0);
+	//ft_printf_fd(1, "size given %lu size calc %lu", nsize, size);
 	get_type(&flags, &block_size, &last, size);
 	block = find_free_block(&last, size);
 	if (!block)
 	{
 		if (flags == LARGE_FLAG)
+		{
+			size = g_data->meta_size * (size / g_data->meta_size) +
+					(size % g_data->meta_size ? g_data->meta_size : 0);
 			block = request_space(size + g_data->meta_size, 1, flags, NULL);
+		}
 		else
 			block = request_space((block_size + g_data->meta_size) * MIN_ALLOC,
 block_size, flags, (flags == TINY_FLAG ? &g_data->tiny_amt : &g_data->small_amt));
@@ -102,8 +108,8 @@ block_size, flags, (flags == TINY_FLAG ? &g_data->tiny_amt : &g_data->small_amt)
 		join_new_block(block, last, flags);
 	}
 	(block) ? (block->flags |= IS_ALLOCD_FLAG) : 0;
-	ft_printf_fd(1, "malloc ret %p\n", block + 1);
-	ft_printf_fd(1, "MALLOC END\n");
+	//ft_printf_fd(1, "malloc ret %p\n", block + 1);
+	//ft_printf_fd(1, "MALLOC END\n");
 	return (block + 1);
 }
 

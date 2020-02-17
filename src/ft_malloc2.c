@@ -73,7 +73,7 @@ t_header	*request_space(size_t size, size_t units,
 
 void		ft_malloc_init(void)
 {
-	ft_printf_fd(1, "INIT\n");
+	//ft_printf_fd(1, "INIT\n");
 	g_data = mmap(NULL, getpagesize(), (PROT_READ | PROT_WRITE), (MAP_PRIVATE | MAP_ANONYMOUS), -1, 0);
 	if (!g_data)
 	{
@@ -88,7 +88,6 @@ void		ft_malloc_init(void)
 				MIN_ALLOC, TINY, TINY_FLAG, &g_data->tiny_amt);
 	if (!g_data->tiny)
 	{
-		
 		return ;
 	}
 	g_data->small = request_space((SMALL + g_data->meta_size) *
@@ -102,7 +101,7 @@ void		ft_malloc_init(void)
 		g_data = NULL;
 		ft_printf_fd(1, "BIG ERROR\n");
 	}
-	ft_printf_fd(1, "init g_data: %p tiny %p small %p large %p\n", g_data, g_data->tiny, g_data->small, g_data->large);
-	ft_printf_fd(1, "tiny sz %lu small sz %lu\n", g_data->tiny_amt, g_data->small_amt);
-	ft_printf_fd(1, "INIT FINISHED\n");
+	//ft_printf_fd(1, "init g_data: %p tiny %p small %p large %p\n", g_data, g_data->tiny, g_data->small, g_data->large);
+	//ft_printf_fd(1, "tiny sz %lu small sz %lu\n", g_data->tiny_amt, g_data->small_amt);
+	//ft_printf_fd(1, "INIT FINISHED\n");
 }

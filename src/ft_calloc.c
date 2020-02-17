@@ -32,12 +32,12 @@ void	*ft_calloc(size_t count, size_t size)
 	if (!new)
 		return (NULL);
 	ft_memset(new, 0, new_size);
-	ft_printf_fd(1, "CALLOC END\n");
+	//ft_printf_fd(1, "CALLOC END\n");
 	return (new);
 }
 
 void	*calloc(size_t count, size_t size)
 {
-	ft_printf_fd(1, "CALLOC\n");
+	//ft_printf_fd(1, "CALLOC\n");
 	return (ft_calloc(count, size));
 }
