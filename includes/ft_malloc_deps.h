@@ -28,8 +28,8 @@
 */
 
 # define MIN_ALLOC 100
-# define TINY	64
-# define SMALL	1024
+# define TINY	96
+# define SMALL	2016
 # define DEBUG	0
 
 /*
