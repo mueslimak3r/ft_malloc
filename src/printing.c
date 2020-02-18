@@ -12,9 +12,9 @@
 
 #include "ft_malloc_deps.h"
 
-void	print_nb(unsigned long long nb, int byte_count, int base, int fd)
+static void		print_nb(unsigned long long nb, int byte_count, int base, int fd)
 {
-	static char	*hex_table = "01234567890ABCDEF";
+	static char	*malhextb = "01234567890ABCDEF";
 	char		printed_chars[byte_count + 1];
 	int			pos;
 
@@ -32,7 +32,7 @@ void	print_nb(unsigned long long nb, int byte_count, int base, int fd)
 		while (nb > 0)
 		{
 			printed_chars[pos] = (base == 16) ?
-				(hex_table[(long long)(nb % base)]) :
+				(malhextb[(long long)(nb % base)]) :
 						((long long)(nb % base) + '0');
 			nb /= base;
 			pos--;
@@ -41,7 +41,7 @@ void	print_nb(unsigned long long nb, int byte_count, int base, int fd)
 	ft_putstr_fd(printed_chars, fd);
 }
 
-int		count_bytes(unsigned long long nb, int base)
+static int		count_bytes(unsigned long long nb, int base)
 {
 	int	ret;
 
@@ -54,7 +54,7 @@ int		count_bytes(unsigned long long nb, int base)
 	return (ret);
 }
 
-void	ft_putnbr_u_base_fd(unsigned long long nb, int base, int fd)
+void			ft_putnbr_u_base_fd(unsigned long long nb, int base, int fd)
 {
 	int byte_count;
 
@@ -62,7 +62,7 @@ void	ft_putnbr_u_base_fd(unsigned long long nb, int base, int fd)
 	print_nb(nb, byte_count + (base == 16 ? 2 : 0), base, fd);
 }
 
-int		handle_single(int fd, char **fmt, va_list *vargs)
+static int		handle_single(int fd, char **fmt, va_list *vargs)
 {
 	if (!*fmt || **fmt != '%' || !*(*fmt + 1))
 		return (0);

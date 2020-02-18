@@ -12,7 +12,7 @@
 
 #include "ft_malloc_deps.h"
 
-void	*ft_memset(void *b, int c, size_t len)
+static void	*ft_memset(void *b, int c, size_t len)
 {
 	unsigned char *dst;
 
@@ -22,7 +22,7 @@ void	*ft_memset(void *b, int c, size_t len)
 	return (b);
 }
 
-void	*ft_calloc(size_t count, size_t size)
+void		*ft_calloc(size_t count, size_t size)
 {
 	char	*new;
 	int		new_size;
@@ -36,7 +36,7 @@ void	*ft_calloc(size_t count, size_t size)
 	return (new);
 }
 
-void	*calloc(size_t count, size_t size)
+void		*calloc(size_t count, size_t size)
 {
 	//ft_printf_fd(1, "CALLOC\n");
 	return (ft_calloc(count, size));

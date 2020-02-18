@@ -73,7 +73,7 @@ void		*ft_malloc(size_t size)
 	//ft_printf_fd(1, "MALLOC\n");
 	if (!g_data)
 	{
-		ft_printf_fd(1, "INIT\n");
+		//ft_printf_fd(1, "INIT\n");
 		ft_malloc_init();
 	}
 	if (size == 0)
@@ -116,6 +116,6 @@ block_size, flags, (flags == TINY_FLAG ? &g_data->tiny_amt : &g_data->small_amt)
 
 void		*malloc(size_t size)
 {
-	ft_printf_fd(1, "MALLOC\n");
+	//ft_printf_fd(1, "MALLOC\n");
 	return (ft_malloc(size));
 }

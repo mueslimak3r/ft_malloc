@@ -12,7 +12,7 @@
 
 #include "ft_malloc_deps.h"
 
-void		*ft_memcpy(void *dst, const void *src, size_t n)
+static void		*ft_memcpy(void *dst, const void *src, size_t n)
 {
 	char		*d1;
 	const char	*s1;
@@ -24,7 +24,7 @@ void		*ft_memcpy(void *dst, const void *src, size_t n)
 	return (dst);
 }
 
-void		*ft_realloc(void *ptr, size_t size)
+void			*ft_realloc(void *ptr, size_t size)
 {
 	t_header	*block_ptr;
 	void		*new_ptr;
@@ -35,7 +35,7 @@ void		*ft_realloc(void *ptr, size_t size)
 	if (!ptr || !g_data)
 		return (ft_malloc(size));
 	block_ptr = (t_header*)ptr - 1;
-	if (check_if_valid(block_ptr))
+	if (malloc_check_if_valid(block_ptr))
 	{
 		if (size <= block_ptr->size * g_data->meta_size)
 			return (ptr);
@@ -46,10 +46,10 @@ void		*ft_realloc(void *ptr, size_t size)
 		ft_free(ptr);
 		return (new_ptr);
 	}
-	return (ft_malloc(size));
+	return (NULL);
 }
 
-void		*realloc(void *ptr, size_t size)
+void			*realloc(void *ptr, size_t size)
 {
 	return (ft_realloc(ptr, size));
 }

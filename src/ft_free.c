@@ -13,7 +13,7 @@
 #include "ft_malloc_deps.h"
 #include "ft_malloc.h"
 
-int			find_allocd_block(t_header *page_start, t_header **last)
+static int			find_allocd_block(t_header *page_start, t_header **last)
 {
 	t_header	*tmp;
 	t_header	*end;
@@ -35,7 +35,7 @@ int			find_allocd_block(t_header *page_start, t_header **last)
 	return (ret);
 }
 
-t_header	*get_page_start(t_header *block_ptr)
+static t_header		*get_page_start(t_header *block_ptr)
 {
 	unsigned long offset;
 
@@ -49,7 +49,7 @@ t_header	*get_page_start(t_header *block_ptr)
 	return (NULL);
 }
 
-int			check_unmap(t_header *page_start, unsigned long flags)
+static int			check_unmap(t_header *page_start, unsigned long flags)
 {
 	t_header		*last;
 	t_header		*next;
@@ -79,7 +79,7 @@ int			check_unmap(t_header *page_start, unsigned long flags)
 	return (1);
 }
 
-int			find_in_bucket(t_header *block_ptr, t_header *bucket)
+static int			find_in_bucket(t_header *block_ptr, t_header *bucket)
 {
 	while (bucket)
 	{
@@ -90,7 +90,7 @@ int			find_in_bucket(t_header *block_ptr, t_header *bucket)
 	return (0);
 }
 
-int			check_if_valid(t_header *block_ptr)
+int					malloc_check_if_valid(t_header *block_ptr)
 {
 	if ((find_in_bucket(block_ptr, g_data->tiny)) ||
 	(find_in_bucket(block_ptr, g_data->small)) ||
@@ -99,7 +99,7 @@ int			check_if_valid(t_header *block_ptr)
 	return (0);
 }
 
-void		ft_free(void *ptr)
+void				ft_free(void *ptr)
 {
 	t_header		*block_ptr;
 
@@ -107,7 +107,7 @@ void		ft_free(void *ptr)
 	if (ptr == NULL || !g_data)// || ptr < g_data->heap_start || ptr >= g_data->heap_end)
 		return ;
 	block_ptr = ((t_header*)ptr) - 1;
-	if (!block_ptr || !(check_if_valid(block_ptr)))
+	if (!block_ptr || !(malloc_check_if_valid(block_ptr)))
 		return ;
 	/*
 	ft_printf_fd(1, "free addr %p block %p\n", block_ptr, ptr);
@@ -138,7 +138,7 @@ void		ft_free(void *ptr)
 	//ft_printf_fd(1, "FREE COMPLETE\n");
 }
 
-void		free(void *ptr)
+void				free(void *ptr)
 {
 	ft_free(ptr);
 	//ft_printf_fd(1, "FREE STOP\n");

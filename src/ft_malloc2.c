@@ -87,15 +87,16 @@ void		ft_malloc_init(void)
 				MIN_ALLOC, TINY, TINY_FLAG, &g_data->tiny_amt);
 	if (!g_data->tiny)
 	{
+		munmap(g_data, g_data->page_size);
+		g_data = NULL;
+		ft_printf_fd(1, "BIG ERROR\n");
 		return ;
 	}
 	g_data->small = request_space((SMALL + g_data->meta_size) *
 				MIN_ALLOC, SMALL, SMALL_FLAG, &g_data->small_amt);
 	if (!g_data->small)
 	{
-		g_data->debug_stats.bytes_unmapped +=
-					g_data->tiny_amt * (TINY + g_data->meta_size);
-		munmap(g_data, getpagesize());
+		munmap(g_data, g_data->page_size);
 		munmap(g_data->tiny, g_data->tiny_amt * (TINY + g_data->meta_size));
 		g_data = NULL;
 		ft_printf_fd(1, "BIG ERROR\n");

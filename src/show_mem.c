@@ -12,7 +12,7 @@
 
 #include "ft_malloc_deps.h"
 
-unsigned long	get_blk_data(t_header *cur, char *name)
+static unsigned long	get_blk_data(t_header *cur, char *name)
 {
 	unsigned long			freed;
 	unsigned long			allocd;
@@ -34,7 +34,7 @@ unsigned long	get_blk_data(t_header *cur, char *name)
 	return (allocd + freed);
 }
 
-void			count_blocks(void)
+void					malloc_count_blocks(void)
 {
 	unsigned long tiny_size;
 	unsigned long small_size;
@@ -63,7 +63,7 @@ void			count_blocks(void)
 						g_data->debug_stats.bytes_unmapped - actual_used);
 }
 
-void			print_mem(char *name, t_header *cur, int freed)
+static void				print_mem(char *name, t_header *cur, int freed)
 {
 	unsigned int	type;
 
@@ -82,7 +82,7 @@ void			print_mem(char *name, t_header *cur, int freed)
 	}
 }
 
-void			show_alloc_mem(void)
+void					show_alloc_mem(void)
 {
 	if (!g_data)
 		ft_malloc_init();
@@ -93,7 +93,7 @@ void			show_alloc_mem(void)
 	ft_printf_fd(1, "*****************\e[0m\n");
 }
 
-void			show_free_mem(void)
+void					show_free_mem(void)
 {
 	if (!g_data)
 		ft_malloc_init();
