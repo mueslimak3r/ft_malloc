@@ -13,7 +13,7 @@ gcc "${dir}/test1.c" -o "${dir}/test1" &>/dev/null
 gcc "${dir}/test2.c" -o "${dir}/test2" &>/dev/null
 gcc "${dir}/test3.c" -o "${dir}/test3" &>/dev/null
 gcc "${dir}/test3b.c" -o "${dir}/test3b" &>/dev/null
-gcc -L"${parentdir}" -lft_malloc "${dir}/test5.c" -o "${dir}/test5" #&>/dev/null
+gcc -L"${parentdir}" -lft_malloc "${dir}/test5.c" -o "${dir}/test5" &>/dev/null
 
 
 ###################################################################
