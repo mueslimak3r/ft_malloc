@@ -52,7 +52,6 @@ t_header	*request_space(size_t size, size_t units,
 		int errnum;
 
 		errnum = errno;
-		perror("Error printed by perror");
 		ft_printf_fd(1, "error: %s\n", strerror( errnum ));
 		return (NULL);
 	}

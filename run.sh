@@ -7,5 +7,6 @@ if [ "$(uname)" == "Darwin" ]; then
 
 elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
 	export LD_LIBRARY_PATH=`pwd`
+	export LD_PRELOAD=`pwd`/libft_malloc.so
 fi
 $@

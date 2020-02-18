@@ -64,8 +64,6 @@ struct			s_malloc_data
 	t_header		*tiny;
 	t_header		*small;
 	t_header		*large;
-	void			*heap_start;
-	void			*heap_end;
 	unsigned long	tiny_amt;
 	unsigned long	small_amt;
 	unsigned int	page_size;
@@ -84,6 +82,7 @@ void			ft_malloc_init(void);
 void			ft_putnbr_u_base_fd(unsigned long long nb, int base, int fd);
 t_header		*request_space(size_t size, size_t units,
 					unsigned long flags, unsigned long *amt);
+int				check_if_valid(t_header *block_ptr);
 int				ft_printf_fd(int fd, char *fmt, ...);
 void			ft_putstr_fd(char const *s, int fd);
 #endif

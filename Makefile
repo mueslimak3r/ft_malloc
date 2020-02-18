@@ -31,7 +31,6 @@ all: $(NAME)
 -include $(DEP)
 
 $(NAME): $(OBJ)
-	#make -C libft
 	$(CC) $(CFLAGS) $(OBJ) -shared -o $@
 	ln -fs $(NAME) $(LINK_NAME)
 
@@ -55,7 +54,6 @@ clean_nolib:
 	@rm -f all.log
 
 fclean: clean_nolib
-	#make fclean -C libft
 	rm -f $(NAME)
 	rm -f $(LINK_NAME)
 	rm -rf a.out*

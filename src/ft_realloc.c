@@ -35,7 +35,7 @@ void		*ft_realloc(void *ptr, size_t size)
 	if (!ptr || !g_data)
 		return (ft_malloc(size));
 	block_ptr = (t_header*)ptr - 1;
-	if ((void*)block_ptr >= g_data->heap_start && (void*)block_ptr < g_data->heap_end)
+	if (check_if_valid(block_ptr))
 	{
 		if (size <= block_ptr->size * g_data->meta_size)
 			return (ptr);
