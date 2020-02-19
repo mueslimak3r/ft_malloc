@@ -6,7 +6,7 @@
 /*   By: calamber <calamber@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/02/07 01:08:58 by calamber          #+#    #+#             */
-/*   Updated: 2020/02/19 03:41:18 by calamber         ###   ########.fr       */
+/*   Updated: 2020/02/19 05:29:38 by calamber         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,11 +29,9 @@ void			*ft_realloc(void *ptr, size_t size)
 	t_header	*block_ptr;
 	void		*new_ptr;
 
-	if (size == 0)
-		return (NULL);
-	if (!ptr || !malloc_check_init())
-		return (ft_malloc(size));
-	if (!malloc_check_if_valid((t_header*)ptr - 1))
+	if (!ptr || !size)
+		return (size ? ft_malloc(size) : NULL);
+	if (!malloc_check_init() || !malloc_check_if_valid((t_header*)ptr - 1))
 		return (NULL);
 	pthread_mutex_lock(&g_mutex);
 	block_ptr = (t_header*)ptr - 1;

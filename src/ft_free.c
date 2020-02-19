@@ -6,7 +6,7 @@
 /*   By: calamber <calamber@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/02/10 02:48:37 by calamber          #+#    #+#             */
-/*   Updated: 2020/02/19 03:40:04 by calamber         ###   ########.fr       */
+/*   Updated: 2020/02/19 05:43:09 by calamber         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -118,6 +118,7 @@ void				ft_free(void *ptr)
 {
 	t_header		*block_ptr;
 
+	//ft_printf_fd(1, "free\n");
 	if (ptr == NULL || !malloc_check_init())
 	{
 		//if (ptr != NULL)
@@ -152,4 +153,5 @@ void				ft_free(void *ptr)
 void				free(void *ptr)
 {
 	ft_free(ptr);
+	//ft_printf_fd(1, "finished free\n");
 }

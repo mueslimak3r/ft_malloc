@@ -6,7 +6,7 @@
 /*   By: calamber <calamber@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/02/07 01:13:01 by calamber          #+#    #+#             */
-/*   Updated: 2020/02/19 02:59:46 by calamber         ###   ########.fr       */
+/*   Updated: 2020/02/19 05:42:57 by calamber         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,7 +80,10 @@ void		*ft_malloc(size_t size)
 	//else
 	//	ft_printf_fd(1, "*M*");
 	if (size == 0)
+	{
+		//ft_printf_fd(1, "MALLOC END\n");
 		return (NULL);
+	}
 	pthread_mutex_lock(&g_mutex);
 	size += size % g_data.meta_size;
 	get_type(&flags, &block_size, &last, size);
@@ -95,6 +98,7 @@ block_size, flags, (flags == TINY_FLAG ? &g_data.tiny_amt : &g_data.small_amt));
 		if (!block)
 		{
 			pthread_mutex_unlock(&g_mutex);
+			//ft_printf_fd(1, "MALLOC END\n");
 			return (NULL);
 		}
 		join_new_block(block, last, flags);
