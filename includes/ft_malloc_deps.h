@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_malloc_deps.h                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: calamber <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: calamber <calamber@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/02/10 02:48:03 by calamber          #+#    #+#             */
-/*   Updated: 2020/02/10 02:48:04 by calamber         ###   ########.fr       */
+/*   Updated: 2020/02/19 01:38:07 by calamber         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,10 +75,11 @@ struct			s_malloc_data
 	t_malloc_stats	debug_stats;
 };
 
-t_malloc_data	*g_data;
-pthread_mutex_t	g_mutex;
+extern t_malloc_data	g_data;
+extern pthread_mutex_t	g_mutex;
 //static bool				g_initialized;
 
+int				malloc_check_init(void);
 void			*ft_malloc(size_t size);
 void			ft_free(void *ptr);
 void			*ft_realloc(void *ptr, size_t size);

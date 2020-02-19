@@ -6,7 +6,7 @@
 /*   By: calamber <calamber@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/02/10 02:48:37 by calamber          #+#    #+#             */
-/*   Updated: 2020/02/15 14:39:53 by calamber         ###   ########.fr       */
+/*   Updated: 2020/02/19 02:16:57 by calamber         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,13 +24,13 @@ static int			find_allocd_block(t_header *page_start, t_header **last)
 	if (!page_start)
 		return (0);
 	tmp = page_start;
-	end = page_start + (g_data->page_size / g_data->meta_size);
+	end = page_start + (g_data.page_size / g_data.meta_size);
 	while (tmp && tmp >= page_start && tmp < end)
 	{
 		if (tmp->flags & IS_ALLOCD_FLAG)
 			ret = 1;
 		*last = tmp;
-		tmp += page_start->size + 1;
+		tmp = tmp->next;
 	}
 	return (ret);
 }
@@ -41,18 +41,18 @@ static t_header		*get_page_start(t_header *block_ptr)
 	/*
 	unsigned long offset;
 
-	if (block_ptr && (uintptr_t)block_ptr >= g_data->page_size)
+	if (block_ptr && (uintptr_t)block_ptr >= g_data.page_size)
 	{
-		offset = (uintptr_t)block_ptr % g_data->page_size;
+		offset = (uintptr_t)block_ptr % g_data.page_size;
 		//if (offset)
-		//	offset /= g_data->meta_size;
+		//	offset /= g_data.meta_size;
 		return ((t_header*)((uintptr_t)block_ptr - offset));
 	}
 	return (NULL);
 	*/
 	if (block_ptr)
 	{
-		offset = (uintptr_t)block_ptr % g_data->page_size;
+		offset = (uintptr_t)block_ptr % g_data.page_size;
 		return ((t_header*)((uintptr_t)block_ptr - offset));
 	}
 	return (NULL);
@@ -65,25 +65,25 @@ static int			check_unmap(t_header *page_start, unsigned long flags)
 	t_header		*prev;
 	unsigned long	allocs_per_page;
 
-	allocs_per_page = g_data->page_size /
-		((flags & TINY_FLAG ? TINY : SMALL) + g_data->meta_size);
+	allocs_per_page = g_data.page_size /
+		((flags & TINY_FLAG ? TINY : SMALL) + g_data.meta_size);
 	if (!page_start || !(flags & (TINY_FLAG | SMALL_FLAG)))
 		return (0);
-	if ((flags & TINY_FLAG && g_data->tiny_amt - allocs_per_page < MIN_ALLOC) ||
-	(flags & SMALL_FLAG && g_data->small_amt - allocs_per_page < MIN_ALLOC) ||
+	if ((flags & TINY_FLAG && g_data.tiny_amt - allocs_per_page < MIN_ALLOC) ||
+	(flags & SMALL_FLAG && g_data.small_amt - allocs_per_page < MIN_ALLOC) ||
 		(find_allocd_block(page_start, &last)))
 		return (0);
 	next = last && last->next ? last->next : NULL;//(last->next < page_start || last->next >=
-		//g_data->page_size / g_data->meta_size + page_start) ? last->next : NULL;
+		//g_data.page_size / g_data.meta_size + page_start) ? last->next : NULL;
 	prev = page_start->prev;
-	(flags & TINY_FLAG) ? (g_data->tiny_amt -= allocs_per_page) : 0;
-	(flags & SMALL_FLAG) ? (g_data->small_amt -= allocs_per_page) : 0;
+	(flags & TINY_FLAG) ? (g_data.tiny_amt -= allocs_per_page) : 0;
+	(flags & SMALL_FLAG) ? (g_data.small_amt -= allocs_per_page) : 0;
 	(prev) ? (prev->next = next) : 0;
 	(next) ? (next->prev = prev) : 0;
-	(page_start == g_data->tiny) ? (g_data->tiny = next) : 0;
-	(page_start == g_data->small) ? (g_data->small = next) : 0;
-	g_data->debug_stats.bytes_unmapped += g_data->page_size;
-	munmap(page_start, g_data->page_size);
+	(page_start == g_data.tiny) ? (g_data.tiny = next) : 0;
+	(page_start == g_data.small) ? (g_data.small = next) : 0;
+	g_data.debug_stats.bytes_unmapped += g_data.page_size;
+	munmap(page_start, g_data.page_size);
 	return (1);
 }
 
@@ -103,10 +103,12 @@ int					malloc_check_if_valid(t_header *block_ptr)
 	int	ret;
 
 	ret = 0;
+	if (!malloc_check_init())
+		return (0);
 	pthread_mutex_lock(&g_mutex);
-	if ((find_in_bucket(block_ptr, g_data->tiny)) ||
-	(find_in_bucket(block_ptr, g_data->small)) ||
-	(find_in_bucket(block_ptr, g_data->large)))
+	if ((find_in_bucket(block_ptr, g_data.tiny)) ||
+	(find_in_bucket(block_ptr, g_data.small)) ||
+	(find_in_bucket(block_ptr, g_data.large)))
 		ret = 1;
 	pthread_mutex_unlock(&g_mutex);
 	return (ret);
@@ -116,15 +118,16 @@ void				ft_free(void *ptr)
 {
 	t_header		*block_ptr;
 
-	if (ptr == NULL || !g_data)
+	if (ptr == NULL || !malloc_check_init())
 	{
-		ft_printf_fd(1, "err ptr: %p g_data %p\n", ptr, g_data);
+		if (ptr != NULL)
+			ft_printf_fd(1, "not init\n", ptr, g_data);
 		return ;
 	}
 	block_ptr = ((t_header*)ptr) - 1;
 	if (!block_ptr || !(malloc_check_if_valid(block_ptr)))
 	{
-		ft_printf_fd(1, "err\n");
+		ft_printf_fd(1, "err bad block\n");
 		return ;
 	}
 	pthread_mutex_lock(&g_mutex);
@@ -135,21 +138,18 @@ void				ft_free(void *ptr)
 			block_ptr->prev->next = block_ptr->next;
 		if (block_ptr->next)
 			block_ptr->next->prev = block_ptr->prev;
-		if (g_data->large == block_ptr)
-			g_data->large = g_data->large->next;
-		g_data->debug_stats.bytes_unmapped += (block_ptr->size *
-						g_data->meta_size) + g_data->meta_size;
-		munmap(block_ptr, (block_ptr->size * g_data->meta_size) + g_data->meta_size);
+		if (g_data.large == block_ptr)
+			g_data.large = g_data.large->next;
+		g_data.debug_stats.bytes_unmapped += (block_ptr->size *
+						g_data.meta_size) + g_data.meta_size;
+		munmap(block_ptr, (block_ptr->size * g_data.meta_size) + g_data.meta_size);
 	}
 	else
 		check_unmap(get_page_start(block_ptr), block_ptr->flags);
 	pthread_mutex_unlock(&g_mutex);
-	//ft_printf_fd(1, "FREE COMPLETE\n");
 }
 
 void				free(void *ptr)
 {
-	//ft_printf_fd(1, "FREE\n");
 	ft_free(ptr);
-	//ft_printf_fd(1, "FREE STOP\n");
 }

@@ -6,7 +6,7 @@
 /*   By: calamber <calamber@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/02/07 01:08:58 by calamber          #+#    #+#             */
-/*   Updated: 2020/02/15 14:39:19 by calamber         ###   ########.fr       */
+/*   Updated: 2020/02/19 01:48:11 by calamber         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,23 +33,23 @@ void			*ft_realloc(void *ptr, size_t size)
 		return (NULL);
 	if (!ptr)
 		return (ft_malloc(size));
-	if (!g_data || !malloc_check_if_valid((t_header*)ptr - 1))
+	if (!malloc_check_init() || !malloc_check_if_valid((t_header*)ptr - 1))
 		return (NULL);
 	pthread_mutex_lock(&g_mutex);
 	block_ptr = (t_header*)ptr - 1;
-	if (size <= block_ptr->size * g_data->meta_size)
+	if (size <= block_ptr->size * g_data.meta_size)
 	{
 		pthread_mutex_unlock(&g_mutex);
 		return (ptr);
 	}
-	else if (block_ptr->size * g_data->meta_size < size)
+	else if (block_ptr->size * g_data.meta_size < size)
 	{
 		pthread_mutex_unlock(&g_mutex);
 		new_ptr = ft_malloc(size);
 		if (!new_ptr)
 			return (ptr);
 		pthread_mutex_lock(&g_mutex);
-		ft_memcpy(new_ptr, ptr, block_ptr->size * g_data->meta_size);
+		ft_memcpy(new_ptr, ptr, block_ptr->size * g_data.meta_size);
 		pthread_mutex_unlock(&g_mutex);
 		ft_free(ptr);
 		return (new_ptr);
