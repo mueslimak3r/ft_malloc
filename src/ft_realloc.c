@@ -58,6 +58,6 @@ void			*ft_realloc(void *ptr, size_t size)
 
 void			*realloc(void *ptr, size_t size)
 {
-	//ft_printf_fd(1, "REALLOC %u\n", size);
+	ft_printf_fd(1, "REALLOC %u\n", size);
 	return (ft_realloc(ptr, size));
 }

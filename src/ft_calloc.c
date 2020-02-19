@@ -44,6 +44,6 @@ void		*ft_calloc(size_t count, size_t size)
 
 void		*calloc(size_t count, size_t size)
 {
-	//ft_printf_fd(1, "CALLOC\n");
+	ft_printf_fd(1, "CALLOC\n");
 	return (ft_calloc(count, size));
 }

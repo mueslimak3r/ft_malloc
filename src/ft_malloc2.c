@@ -17,12 +17,12 @@ pthread_mutex_t	g_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 int			malloc_check_init(void)
 {
-	static int	init;
+	static int	init = 0;
 	int			curr;
 
 	pthread_mutex_lock(&g_mutex);
 	curr = init;
-	init++;
+	init = 1;
 	pthread_mutex_unlock(&g_mutex);
 	return (curr);
 }
@@ -85,7 +85,7 @@ t_header	*request_space(size_t size, size_t units,
 void		ft_malloc_init(void)
 {
 	pthread_mutex_lock(&g_mutex);
-	//ft_printf_fd(1, "INIT %lu %lu %u g_data %p\n", (unsigned long)getpid(), (unsigned long)getppid(), pthread_self(), &g_data);
+	ft_printf_fd(1, "INIT %lu %lu %u g_data %p\n", (unsigned long)getpid(), (unsigned long)getppid(), pthread_self(), &g_data);
 	g_data.meta_size = sizeof(t_header);
 	g_data.page_size = (size_t)getpagesize();
 	g_data.debug_stats = (t_malloc_stats){ 0, 0 };
@@ -105,6 +105,6 @@ void		ft_malloc_init(void)
 		munmap(g_data.tiny, g_data.tiny_amt * (TINY + g_data.meta_size));
 		ft_printf_fd(1, "BIG ERROR\n");
 	}
-	//ft_printf_fd(1, "INIT  g_data %p\n", &g_data);
+	ft_printf_fd(1, "INIT FINISH g_data %p\n", &g_data);
 	pthread_mutex_unlock(&g_mutex);
 }

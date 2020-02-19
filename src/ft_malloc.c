@@ -69,12 +69,12 @@ void		join_new_block(t_header *new, t_header *last, size_t flags)
 
 void		*ft_malloc(size_t size)
 {
-	t_header		*block;
-	t_header		*last;
-	size_t			block_size;
-	size_t			flags;
+	t_header		*block = NULL;
+	t_header		*last = NULL;
+	size_t			block_size = 0;
+	size_t			flags = 0;
 
-	//ft_printf_fd(1, "MALLOC\n");
+	ft_printf_fd(1, "MALLOC\n");
 	if (!malloc_check_init())
 		ft_malloc_init();
 	//else
@@ -85,7 +85,7 @@ void		*ft_malloc(size_t size)
 		return (NULL);
 	}
 	pthread_mutex_lock(&g_mutex);
-	size += size % g_data.meta_size;
+	size += (size % g_data.meta_size) ? g_data.meta_size - (size % g_data.meta_size) : 0;
 	get_type(&flags, &block_size, &last, size);
 	block = find_free_block(&last, size);
 	if (!block)
@@ -104,7 +104,7 @@ block_size, flags, (flags == TINY_FLAG ? &g_data.tiny_amt : &g_data.small_amt));
 		join_new_block(block, last, flags);
 	}
 	(block) ? (block->flags |= IS_ALLOCD_FLAG) : 0;
-	//ft_printf_fd(1, "MALLOC END\n");
+	ft_printf_fd(1, "MALLOC END\n");
 	pthread_mutex_unlock(&g_mutex);
 	return (block + 1);
 }

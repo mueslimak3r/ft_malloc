@@ -20,7 +20,6 @@ static int			find_allocd_block(t_header *page_start, t_header **last)
 	int			ret;
 
 	ret = 0;
-	*last = NULL;
 	if (!page_start)
 		return (0);
 	tmp = page_start;
@@ -60,7 +59,7 @@ static t_header		*get_page_start(t_header *block_ptr)
 
 static int			check_unmap(t_header *page_start, unsigned long flags)
 {
-	t_header		*last;
+	t_header		*last = NULL;
 	t_header		*next;
 	t_header		*prev;
 	unsigned long	allocs_per_page;
@@ -118,7 +117,7 @@ void				ft_free(void *ptr)
 {
 	t_header		*block_ptr;
 
-	//ft_printf_fd(1, "free\n");
+	ft_printf_fd(1, "free\n");
 	if (ptr == NULL || !malloc_check_init())
 	{
 		//if (ptr != NULL)
