@@ -6,7 +6,7 @@
 /*   By: calamber <calamber@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/02/10 02:48:37 by calamber          #+#    #+#             */
-/*   Updated: 2020/02/19 02:16:57 by calamber         ###   ########.fr       */
+/*   Updated: 2020/02/19 03:40:04 by calamber         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -120,14 +120,14 @@ void				ft_free(void *ptr)
 
 	if (ptr == NULL || !malloc_check_init())
 	{
-		if (ptr != NULL)
-			ft_printf_fd(1, "not init\n", ptr, g_data);
+		//if (ptr != NULL)
+		//	ft_printf_fd(1, "not init\n", ptr, g_data);
 		return ;
 	}
 	block_ptr = ((t_header*)ptr) - 1;
 	if (!block_ptr || !(malloc_check_if_valid(block_ptr)))
 	{
-		ft_printf_fd(1, "err bad block\n");
+		//ft_printf_fd(1, "err bad block\n");
 		return ;
 	}
 	pthread_mutex_lock(&g_mutex);

@@ -6,7 +6,7 @@
 /*   By: calamber <calamber@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/02/07 01:13:01 by calamber          #+#    #+#             */
-/*   Updated: 2020/02/19 02:30:17 by calamber         ###   ########.fr       */
+/*   Updated: 2020/02/19 02:59:46 by calamber         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,8 +77,8 @@ void		*ft_malloc(size_t size)
 	//ft_printf_fd(1, "MALLOC\n");
 	if (!malloc_check_init())
 		ft_malloc_init();
-	else
-		ft_printf_fd(1, "MALLOC\n");
+	//else
+	//	ft_printf_fd(1, "*M*");
 	if (size == 0)
 		return (NULL);
 	pthread_mutex_lock(&g_mutex);

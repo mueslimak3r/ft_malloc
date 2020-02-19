@@ -6,7 +6,7 @@
 /*   By: calamber <calamber@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/02/10 03:46:17 by calamber          #+#    #+#             */
-/*   Updated: 2020/02/19 02:23:36 by calamber         ###   ########.fr       */
+/*   Updated: 2020/02/19 03:40:14 by calamber         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,10 +64,7 @@ t_header	*request_space(size_t size, size_t units,
 							FT_MAP, -1, 0);
 	if ((void*)block == MAP_FAILED)
 	{
-		int errnum;
-
-		errnum = errno;
-		ft_printf_fd(1, "error: %s\n", strerror( errnum ));
+		ft_printf_fd(1, "MAP FAILED\n");
 		return (NULL);
 	}
 	g_data.debug_stats.bytes_mapped += to_alloc;
@@ -88,7 +85,7 @@ t_header	*request_space(size_t size, size_t units,
 void		ft_malloc_init(void)
 {
 	pthread_mutex_lock(&g_mutex);
-	ft_printf_fd(1, "INIT %lu %lu %u g_data %p\n", (unsigned long)getpid(), (unsigned long)getppid(), pthread_self(), &g_data);
+	//ft_printf_fd(1, "INIT %lu %lu %u g_data %p\n", (unsigned long)getpid(), (unsigned long)getppid(), pthread_self(), &g_data);
 	g_data.meta_size = sizeof(t_header);
 	g_data.page_size = (size_t)getpagesize();
 	g_data.debug_stats = (t_malloc_stats){ 0, 0 };
@@ -108,8 +105,6 @@ void		ft_malloc_init(void)
 		munmap(g_data.tiny, g_data.tiny_amt * (TINY + g_data.meta_size));
 		ft_printf_fd(1, "BIG ERROR\n");
 	}
-	//ft_printf_fd(1, "init g_data: %p tiny %p small %p large %p\n", g_data, g_data.tiny, g_data.small, g_data.large);
-	//ft_printf_fd(1, "tiny sz %lu small sz %lu\n", g_data.tiny_amt, g_data.small_amt);
-	ft_printf_fd(1, "INIT  g_data %p\n", &g_data);
+	//ft_printf_fd(1, "INIT  g_data %p\n", &g_data);
 	pthread_mutex_unlock(&g_mutex);
 }
