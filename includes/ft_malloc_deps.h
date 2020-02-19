@@ -19,9 +19,13 @@
 # include <stdint.h>
 # include <stdlib.h>
 # include <stdarg.h>
-#include <errno.h>
- #include <stdio.h>
- #include <string.h>
+# include <errno.h>
+# include <stdio.h>
+# include <string.h>
+# include <pthread.h>
+
+# define FT_PROT (PROT_READ | PROT_WRITE)
+# define FT_MAP (MAP_ANONYMOUS | MAP_PRIVATE)
 
 /*
 ** zones
@@ -72,6 +76,7 @@ struct			s_malloc_data
 };
 
 t_malloc_data	*g_data;
+pthread_mutex_t	g_mutex;
 //static bool				g_initialized;
 
 void			*ft_malloc(size_t size);

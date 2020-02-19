@@ -38,13 +38,22 @@ static int			find_allocd_block(t_header *page_start, t_header **last)
 static t_header		*get_page_start(t_header *block_ptr)
 {
 	unsigned long offset;
+	/*
+	unsigned long offset;
 
 	if (block_ptr && (uintptr_t)block_ptr >= g_data->page_size)
 	{
 		offset = (uintptr_t)block_ptr % g_data->page_size;
-		if (offset)
-			offset /= g_data->meta_size;
-		return (block_ptr - offset);
+		//if (offset)
+		//	offset /= g_data->meta_size;
+		return ((t_header*)((uintptr_t)block_ptr - offset));
+	}
+	return (NULL);
+	*/
+	if (block_ptr)
+	{
+		offset = (uintptr_t)block_ptr % g_data->page_size;
+		return ((t_header*)((uintptr_t)block_ptr - offset));
 	}
 	return (NULL);
 }
@@ -64,8 +73,8 @@ static int			check_unmap(t_header *page_start, unsigned long flags)
 	(flags & SMALL_FLAG && g_data->small_amt - allocs_per_page < MIN_ALLOC) ||
 		(find_allocd_block(page_start, &last)))
 		return (0);
-	next = last && last->next && (last->next < page_start || last->next >=
-		g_data->page_size / g_data->meta_size + page_start) ? last->next : NULL;
+	next = last && last->next ? last->next : NULL;//(last->next < page_start || last->next >=
+		//g_data->page_size / g_data->meta_size + page_start) ? last->next : NULL;
 	prev = page_start->prev;
 	(flags & TINY_FLAG) ? (g_data->tiny_amt -= allocs_per_page) : 0;
 	(flags & SMALL_FLAG) ? (g_data->small_amt -= allocs_per_page) : 0;
@@ -74,7 +83,6 @@ static int			check_unmap(t_header *page_start, unsigned long flags)
 	(page_start == g_data->tiny) ? (g_data->tiny = next) : 0;
 	(page_start == g_data->small) ? (g_data->small = next) : 0;
 	g_data->debug_stats.bytes_unmapped += g_data->page_size;
-
 	munmap(page_start, g_data->page_size);
 	return (1);
 }
@@ -92,35 +100,35 @@ static int			find_in_bucket(t_header *block_ptr, t_header *bucket)
 
 int					malloc_check_if_valid(t_header *block_ptr)
 {
+	int	ret;
+
+	ret = 0;
+	pthread_mutex_lock(&g_mutex);
 	if ((find_in_bucket(block_ptr, g_data->tiny)) ||
 	(find_in_bucket(block_ptr, g_data->small)) ||
 	(find_in_bucket(block_ptr, g_data->large)))
-		return (1);
-	return (0);
+		ret = 1;
+	pthread_mutex_unlock(&g_mutex);
+	return (ret);
 }
 
 void				ft_free(void *ptr)
 {
 	t_header		*block_ptr;
 
-	//ft_printf_fd(1, "FREE\n");
-	if (ptr == NULL || !g_data)// || ptr < g_data->heap_start || ptr >= g_data->heap_end)
+	if (ptr == NULL || !g_data)
+	{
+		ft_printf_fd(1, "err ptr: %p g_data %p\n", ptr, g_data);
 		return ;
+	}
 	block_ptr = ((t_header*)ptr) - 1;
 	if (!block_ptr || !(malloc_check_if_valid(block_ptr)))
-		return ;
-	/*
-	ft_printf_fd(1, "free addr %p block %p\n", block_ptr, ptr);
-	if (!g_data)
-		ft_printf_fd(1, "g_data null\n");
-	else
 	{
-		ft_printf_fd(1, "free g_data: %p tiny %p small %p large %p\n", g_data, g_data->tiny, g_data->small, g_data->large);
-		ft_printf_fd(1, "tiny sz %lu small sz %lu\n", g_data->tiny_amt, g_data->small_amt);
+		ft_printf_fd(1, "err\n");
+		return ;
 	}
-	*/
+	pthread_mutex_lock(&g_mutex);
 	block_ptr->flags ^= 0x1;
-
 	if (block_ptr->flags & 0x8)
 	{
 		if (block_ptr->prev)
@@ -135,11 +143,13 @@ void				ft_free(void *ptr)
 	}
 	else
 		check_unmap(get_page_start(block_ptr), block_ptr->flags);
+	pthread_mutex_unlock(&g_mutex);
 	//ft_printf_fd(1, "FREE COMPLETE\n");
 }
 
 void				free(void *ptr)
 {
+	//ft_printf_fd(1, "FREE\n");
 	ft_free(ptr);
 	//ft_printf_fd(1, "FREE STOP\n");
 }

@@ -3,7 +3,8 @@ CC := gcc
 MODULES := src includes
 #LIBS := #-Llibft -lft
 
-CFLAGS +=  -Iincludes -Wall -Werror -Wextra -fPIC
+OBJFLAGS := -Wall -Werror -Wextra -Iincludes -O0 -g -fPIC -c -mmacosx-version-min=10.5
+LIBFLAGS := -shared -ldl -g
 #CFLAGS += -Ilibft/includes
 #CFLAGS += -g -fsanitize=address
 
@@ -31,12 +32,12 @@ all: $(NAME)
 -include $(DEP)
 
 $(NAME): $(OBJ)
-	$(CC) $(CFLAGS) $(OBJ) -shared -o $@
+	$(CC) $(LIBFLAGS) $(OBJ)  -o $@
 	ln -fs $(NAME) $(LINK_NAME)
 
 %.d : %.c
-	@./depend.sh $*.o $(CFLAGS) $< > $@
-	@printf '\t%s' "$(CC) $(CFLAGS) -c -o $*.o $<" >> $@
+	@./depend.sh $*.o $(OBJFLAGS) $< > $@
+	@printf '\t%s' "$(CC) $(OBJFLAGS) -o $*.o $<" >> $@
 	@echo $@ >> all.log
 
 unit_tests: all

@@ -45,14 +45,15 @@ t_header	*request_space(size_t size, size_t units,
 
 	to_alloc = size > g_data->page_size ? (g_data->page_size *
 			((size / g_data->page_size) + 1)) : g_data->page_size;
-	block = mmap(NULL, to_alloc, (PROT_READ | PROT_WRITE),
-							(MAP_PRIVATE | MAP_ANONYMOUS), -1, 0);
+	block = mmap(NULL, to_alloc, FT_PROT,
+							FT_MAP, -1, 0);
 	if ((void*)block == MAP_FAILED)
 	{
 		int errnum;
 
 		errnum = errno;
 		ft_printf_fd(1, "error: %s\n", strerror( errnum ));
+		pthread_mutex_unlock(&g_mutex);
 		return (NULL);
 	}
 	g_data->debug_stats.bytes_mapped += to_alloc;
@@ -72,11 +73,14 @@ t_header	*request_space(size_t size, size_t units,
 
 void		ft_malloc_init(void)
 {
-	//ft_printf_fd(1, "INIT\n");
-	g_data = mmap(NULL, getpagesize(), (PROT_READ | PROT_WRITE), (MAP_PRIVATE | MAP_ANONYMOUS), -1, 0);
-	if (!g_data)
+	pthread_mutex_init(&g_mutex, NULL);
+	pthread_mutex_lock(&g_mutex);
+	ft_printf_fd(1, "INIT %lu g_data %p\n", (unsigned long)getpid(), g_data);
+	g_data = mmap(NULL, getpagesize(), FT_PROT, FT_MAP, -1, 0);
+	if ((void*)g_data == MAP_FAILED)
 	{
 		ft_printf_fd(1, "MAP FAILED\n");
+		pthread_mutex_unlock(&g_mutex);
 		return ;
 	}
 	g_data->meta_size = sizeof(t_header);
@@ -90,18 +94,20 @@ void		ft_malloc_init(void)
 		munmap(g_data, g_data->page_size);
 		g_data = NULL;
 		ft_printf_fd(1, "BIG ERROR\n");
+		pthread_mutex_unlock(&g_mutex);
 		return ;
 	}
 	g_data->small = request_space((SMALL + g_data->meta_size) *
 				MIN_ALLOC, SMALL, SMALL_FLAG, &g_data->small_amt);
 	if (!g_data->small)
 	{
-		munmap(g_data, g_data->page_size);
 		munmap(g_data->tiny, g_data->tiny_amt * (TINY + g_data->meta_size));
+		munmap(g_data, g_data->page_size);
 		g_data = NULL;
 		ft_printf_fd(1, "BIG ERROR\n");
 	}
 	//ft_printf_fd(1, "init g_data: %p tiny %p small %p large %p\n", g_data, g_data->tiny, g_data->small, g_data->large);
 	//ft_printf_fd(1, "tiny sz %lu small sz %lu\n", g_data->tiny_amt, g_data->small_amt);
-	//ft_printf_fd(1, "INIT FINISHED\n");
+	ft_printf_fd(1, "INIT  g_data %p\n", g_data);
+	pthread_mutex_unlock(&g_mutex);
 }
