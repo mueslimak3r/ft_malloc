@@ -12,7 +12,7 @@
 
 #include "ft_malloc_deps.h"
 
-t_header	*find_free_block(t_header **last, size_t size)
+static t_header	*first_fit(t_header **last, size_t size)
 {
 	t_header *current;
 
@@ -28,31 +28,10 @@ t_header	*find_free_block(t_header **last, size_t size)
 	return (current);
 }
 
-void		get_type(size_t *flags, size_t *block_size,
-							t_header **last, size_t size)
+static t_header	*join_new_block(t_header *new, t_header *last, size_t flags)
 {
-	if (size <= TINY)
-	{
-		*flags = TINY_FLAG;
-		*block_size = TINY;
-		*last = g_data.tiny;
-	}
-	else if (size > TINY && size <= SMALL)
-	{
-		*flags = SMALL_FLAG;
-		*block_size = SMALL;
-		*last = g_data.small;
-	}
-	else
-	{
-		*flags = LARGE_FLAG;
-		*last = g_data.large;
-		*block_size = size;
-	}
-}
-
-void		join_new_block(t_header *new, t_header *last, size_t flags)
-{
+	if (!new)
+		return (NULL);
 	new->prev = NULL;
 	if (last)
 	{
@@ -65,52 +44,59 @@ void		join_new_block(t_header *new, t_header *last, size_t flags)
 		g_data.small = new;
 	else if (flags == LARGE_FLAG)
 		g_data.large = new;
+	return (new);
 }
 
-void		*ft_malloc(size_t size)
+static t_header	*get_more(size_t size, size_t block_size, size_t flags)
 {
-	t_header		*block = NULL;
-	t_header		*last = NULL;
-	size_t			block_size = 0;
-	size_t			flags = 0;
+	t_header	*block;
 
-	ft_printf_fd(1, "MALLOC\n");
+	if (flags == LARGE_FLAG)
+		block = request_space(size + g_data.meta_size, 1, flags, NULL);
+	else
+		block = request_space((block_size + g_data.meta_size) * MIN_ALLOC,
+									block_size, flags, (flags == TINY_FLAG ?
+									&g_data.tiny_amt : &g_data.small_amt));
+	return (block);
+}
+
+static t_header	*find_block(size_t size)
+{
+	t_header		*block;
+	t_header		*last;
+	size_t			block_size;
+	size_t			flags;
+
+	if (size <= SMALL)
+	{
+		flags = (size <= TINY) ? TINY_FLAG : SMALL_FLAG;
+		block_size = (size <= TINY) ? TINY : SMALL;
+		last = (size <= TINY) ? g_data.tiny : g_data.small;
+	}
+	else
+	{
+		flags = LARGE_FLAG;
+		last = g_data.large;
+		block_size = size;
+	}
+	if (!(block = first_fit(&last, size)))
+		return (join_new_block(get_more(size, block_size, flags), last, flags));
+	return (block);
+}
+
+void			*ft_malloc(size_t size)
+{
+	t_header		*block;
+
 	if (!malloc_check_init())
 		ft_malloc_init();
-	//else
-	//	ft_printf_fd(1, "*M*");
 	if (size == 0)
-	{
-		//ft_printf_fd(1, "MALLOC END\n");
 		return (NULL);
-	}
-	pthread_mutex_lock(&g_mutex);
-	size += (size % g_data.meta_size) ? g_data.meta_size - (size % g_data.meta_size) : 0;
-	get_type(&flags, &block_size, &last, size);
-	block = find_free_block(&last, size);
+	size += (size % g_data.meta_size) ?
+			g_data.meta_size - (size % g_data.meta_size) : 0;
+	block = find_block(size);
 	if (!block)
-	{
-		if (flags == LARGE_FLAG)
-			block = request_space(size + g_data.meta_size, 1, flags, NULL);
-		else
-			block = request_space((block_size + g_data.meta_size) * MIN_ALLOC,
-block_size, flags, (flags == TINY_FLAG ? &g_data.tiny_amt : &g_data.small_amt));
-		if (!block)
-		{
-			pthread_mutex_unlock(&g_mutex);
-			//ft_printf_fd(1, "MALLOC END\n");
-			return (NULL);
-		}
-		join_new_block(block, last, flags);
-	}
-	(block) ? (block->flags |= IS_ALLOCD_FLAG) : 0;
-	ft_printf_fd(1, "MALLOC END\n");
-	pthread_mutex_unlock(&g_mutex);
+		return (NULL);
+	block->flags |= IS_ALLOCD_FLAG;
 	return (block + 1);
-}
-
-void		*malloc(size_t size)
-{
-	//ft_printf_fd(1, "MALLOC\n");
-	return (ft_malloc(size));
 }

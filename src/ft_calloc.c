@@ -35,15 +35,11 @@ void		*ft_calloc(size_t count, size_t size)
 	new = ft_malloc(new_size);
 	if (!new)
 		return (NULL);
-	pthread_mutex_lock(&g_mutex);
 	ft_memset(new, 0, new_size);
-	pthread_mutex_unlock(&g_mutex);
-	//ft_printf_fd(1, "CALLOC END\n");
 	return (new);
 }
 
 void		*calloc(size_t count, size_t size)
 {
-	ft_printf_fd(1, "CALLOC\n");
 	return (ft_calloc(count, size));
 }

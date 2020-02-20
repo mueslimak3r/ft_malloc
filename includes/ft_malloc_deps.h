@@ -24,16 +24,13 @@
 # include <string.h>
 # include <pthread.h>
 
-# define FT_PROT (PROT_READ | PROT_WRITE)
-# define FT_MAP (MAP_ANONYMOUS | MAP_PRIVATE)
-
 /*
 ** zones
 */
 
-# define MIN_ALLOC 100
-# define TINY	96
-# define SMALL	2016
+# define MIN_ALLOC 128
+# define TINY	64
+# define SMALL	1120//2016
 # define DEBUG	0
 
 /*
@@ -76,8 +73,6 @@ struct			s_malloc_data
 };
 
 extern t_malloc_data	g_data;
-extern pthread_mutex_t	g_mutex;
-//static bool				g_initialized;
 
 int				malloc_check_init(void);
 void			*ft_malloc(size_t size);

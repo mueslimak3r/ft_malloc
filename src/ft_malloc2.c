@@ -12,18 +12,16 @@
 
 #include "ft_malloc_deps.h"
 
-t_malloc_data	g_data = { NULL, NULL, NULL, 0, 0, 0, 0, (t_malloc_stats){ 0, 0 } };
-pthread_mutex_t	g_mutex = PTHREAD_MUTEX_INITIALIZER;
+t_malloc_data	g_data = { NULL, NULL, NULL, 0, 0, 0, 0,
+							(t_malloc_stats){ 0, 0 } };
 
 int			malloc_check_init(void)
 {
 	static int	init = 0;
 	int			curr;
 
-	pthread_mutex_lock(&g_mutex);
 	curr = init;
 	init = 1;
-	pthread_mutex_unlock(&g_mutex);
 	return (curr);
 }
 
@@ -60,13 +58,10 @@ t_header	*request_space(size_t size, size_t units,
 
 	to_alloc = size > g_data.page_size ? (g_data.page_size *
 			((size / g_data.page_size) + 1)) : g_data.page_size;
-	block = mmap(NULL, to_alloc, FT_PROT,
-							FT_MAP, -1, 0);
+	block = mmap(NULL, to_alloc, PROT_READ | PROT_WRITE,
+							MAP_ANONYMOUS | MAP_PRIVATE, -1, 0);
 	if ((void*)block == MAP_FAILED)
-	{
-		ft_printf_fd(1, "MAP FAILED\n");
 		return (NULL);
-	}
 	g_data.debug_stats.bytes_mapped += to_alloc;
 	block->next = NULL;
 	block->prev = NULL;
@@ -84,8 +79,6 @@ t_header	*request_space(size_t size, size_t units,
 
 void		ft_malloc_init(void)
 {
-	pthread_mutex_lock(&g_mutex);
-	ft_printf_fd(1, "INIT %lu %lu %u g_data %p\n", (unsigned long)getpid(), (unsigned long)getppid(), pthread_self(), &g_data);
 	g_data.meta_size = sizeof(t_header);
 	g_data.page_size = (size_t)getpagesize();
 	g_data.debug_stats = (t_malloc_stats){ 0, 0 };
@@ -95,7 +88,6 @@ void		ft_malloc_init(void)
 	if (!g_data.tiny)
 	{
 		ft_printf_fd(1, "BIG ERROR\n");
-		pthread_mutex_unlock(&g_mutex);
 		return ;
 	}
 	g_data.small = request_space((SMALL + g_data.meta_size) *
@@ -105,6 +97,4 @@ void		ft_malloc_init(void)
 		munmap(g_data.tiny, g_data.tiny_amt * (TINY + g_data.meta_size));
 		ft_printf_fd(1, "BIG ERROR\n");
 	}
-	ft_printf_fd(1, "INIT FINISH g_data %p\n", &g_data);
-	pthread_mutex_unlock(&g_mutex);
 }

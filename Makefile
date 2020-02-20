@@ -5,7 +5,7 @@ MODULES := src includes
 
 OBJFLAGS := -Wall -Werror -Wextra -Iincludes -O0 -g -fPIC -c #-mmacosx-version-min=10.5 #-mmacosx-version-min=10.6
 
-LIBFLAGS := -shared -ldl -lpthread -g
+LIBFLAGS := -shared -ldl -g
 #CFLAGS += -Ilibft/includes
 #CFLAGS += -g -fsanitize=address
 

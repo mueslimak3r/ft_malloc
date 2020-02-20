@@ -20,7 +20,7 @@ static void		*ft_memcpy(void *dst, const void *src, size_t n)
 	d1 = dst;
 	s1 = src;
 	while (n--)
-		*d1++ = *s1++;
+		*(d1++) = *(s1++);
 	return (dst);
 }
 
@@ -33,31 +33,21 @@ void			*ft_realloc(void *ptr, size_t size)
 		return (size ? ft_malloc(size) : NULL);
 	if (!malloc_check_init() || !malloc_check_if_valid((t_header*)ptr - 1))
 		return (NULL);
-	pthread_mutex_lock(&g_mutex);
 	block_ptr = (t_header*)ptr - 1;
 	if (size <= block_ptr->size * g_data.meta_size)
-	{
-		pthread_mutex_unlock(&g_mutex);
 		return (ptr);
-	}
 	else if (size > block_ptr->size * g_data.meta_size)
 	{
-		pthread_mutex_unlock(&g_mutex);
-		new_ptr = ft_malloc(size);
-		if (!new_ptr)
+		if (!(new_ptr = ft_malloc(size)))
 			return (ptr);
-		pthread_mutex_lock(&g_mutex);
 		ft_memcpy(new_ptr, ptr, block_ptr->size * g_data.meta_size);
-		pthread_mutex_unlock(&g_mutex);
 		ft_free(ptr);
 		return (new_ptr);
 	}
-	pthread_mutex_unlock(&g_mutex);
 	return (NULL);
 }
 
 void			*realloc(void *ptr, size_t size)
 {
-	ft_printf_fd(1, "REALLOC %u\n", size);
 	return (ft_realloc(ptr, size));
 }
